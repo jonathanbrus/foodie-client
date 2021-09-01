@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "382207130624",
+    "project_id": "alofoodie-13d05",
+    "storage_bucket": "alofoodie-13d05.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:382207130624:android:f152cfa142b0ae42acece5",
+        "android_client_info": {
+          "package_name": "com.ALO_Foodie_alo_foodie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "382207130624-85a4lncj400ti6so209lv0j7nmrid52r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5B0zdnO8CqcItzBJIoQcv-gJizuGfQyg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "382207130624-85a4lncj400ti6so209lv0j7nmrid52r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
