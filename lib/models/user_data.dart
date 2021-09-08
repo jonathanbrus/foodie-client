@@ -2,18 +2,16 @@ import './addresses.dart';
 
 class UserData {
   String name;
-  String mailId;
+  String email;
   int phone;
   bool isPrime;
   List<Address> addresses;
-  List<String> wishlist;
 
   UserData({
     required this.name,
-    required this.mailId,
+    required this.email,
     required this.phone,
     required this.isPrime,
     required this.addresses,
-    required this.wishlist,
   });
 }

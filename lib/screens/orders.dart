@@ -1,9 +1,10 @@
+import 'package:alofoodie/ui_widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 //provider
 import '../../providers/orders.dart';
-// import '../../providers/auth.dart';
+import '../providers/user.dart';
 
 //widgets
 import '../widgets/double_back.dart';
@@ -21,14 +22,23 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
+  bool _loaded = false;
   Choice _selected = Choice.All;
+
+  fetch(BuildContext context) async {
+    final authToken = Provider.of<User>(context, listen: false).authToken;
+
+    await Provider.of<Orders>(context).fetchAllOrders(authToken);
+
+    setState(() {
+      _loaded = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final orders = Provider.of<Orders>(context);
-    // final token = Provider.of<Auth>(context, listen: false).authToken;
-
-    // orders.fetchAllOrders(token);
+    fetch(context);
 
     List filteredOrders = orders.allOrders;
 
@@ -75,7 +85,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
         child: SafeArea(
           child: ListView(
             children: [
-              if (filteredOrders.isEmpty)
+              if (!_loaded)
+                Container(
+                  height: MediaQuery.of(context).size.height - 152,
+                  child: Loader(),
+                ),
+              if (_loaded && filteredOrders.isEmpty)
                 Container(
                   width: double.infinity,
                   height: MediaQuery.of(context).size.height - 160,
@@ -95,6 +110,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     ],
                   ),
                 ),
+              SizedBox(height: 10),
               ...filteredOrders.map((order) => OrderListItem(order: order)),
             ],
           ),

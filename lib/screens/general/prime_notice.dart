@@ -11,7 +11,7 @@ class PrimeNotice extends StatelessWidget {
           onTap: () => Navigator.maybePop(context),
           child: Icon(Icons.arrow_back_ios_new_rounded),
         ),
-        title: Text("Alo Prime Notice"),
+        title: Text("Alo Prime Membership"),
       ),
       body: SingleChildScrollView(
         child: Container(

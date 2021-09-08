@@ -13,8 +13,6 @@ class FoodItem extends StatelessWidget {
   final int offerPrice;
   final int packagingCharge;
   final int quantity;
-  // final Function addToCart;
-  // final Function removeFromCart;
 
   const FoodItem({
     required this.id,
@@ -25,8 +23,6 @@ class FoodItem extends StatelessWidget {
     required this.offerPrice,
     required this.packagingCharge,
     required this.quantity,
-    // required this.addToCart,
-    // required this.removeFromCart,
     Key? key,
   }) : super(key: key);
 
@@ -34,7 +30,7 @@ class FoodItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // final int offer = (((fixedPrice - offerPrice) / fixedPrice) * 100).ceil();
     return Card(
-      margin: EdgeInsets.all(8),
+      margin: EdgeInsets.only(bottom: 8, left: 8, right: 8),
       elevation: 4,
       clipBehavior: Clip.hardEdge,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -79,13 +75,6 @@ class FoodItem extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // Padding(
-                    //   padding: EdgeInsets.only(right: 6),
-                    //   child: Text(
-                    //     description,
-                    //     maxLines: name.length > 25 ? 2 : 3,
-                    //   ),
-                    // ),
                     Expanded(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

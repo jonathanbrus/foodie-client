@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/auth.dart';
+import '../../providers/user.dart';
 
 import '../../screens/home.dart';
 
@@ -36,7 +36,7 @@ class _SignInScreenState extends State<SignInScreen> {
     });
 
     try {
-      await Provider.of<Auth>(context, listen: false).signIn(
+      await Provider.of<User>(context, listen: false).signIn(
         email: _detail["email"].trim(),
         password: _detail["password"].trim(),
       );

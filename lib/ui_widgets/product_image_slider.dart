@@ -29,7 +29,7 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
                 child: FadeInImage(
                   placeholder: AssetImage("assets/fallback.jpg"),
                   image: NetworkImage(image),
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   alignment: Alignment.center,
                 ),
               ),

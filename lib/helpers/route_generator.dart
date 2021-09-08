@@ -16,6 +16,7 @@ import '../screens/product_details.dart';
 import '../screens/wishlist.dart';
 import '../screens/cart.dart';
 import '../screens/orders.dart';
+import '../screens/order_details.dart';
 import '../screens/checkout.dart';
 import '../screens/payments.dart';
 
@@ -99,6 +100,16 @@ class RouteGenerator {
 
       case OrdersScreen.routeName:
         return MaterialPageRoute(builder: (ctx) => OrdersScreen());
+
+      case OrderDetailsScreen.routeName:
+        if (args is List) {
+          return MaterialPageRoute(
+            builder: (ctx) => OrderDetailsScreen(
+              orderId: args[0],
+            ),
+          );
+        }
+        return _errorRoute();
 
       case CheckOutScreen.routeName:
         return MaterialPageRoute(builder: (ctx) => CheckOutScreen());

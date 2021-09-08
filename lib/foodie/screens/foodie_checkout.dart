@@ -3,11 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../providers/cart.dart';
 
-// import '../../../providers/auth.dart';
-
 import '../../../helpers/checkout_helper.dart';
 
-import '../../ui_widgets/price_detail.dart';
 import '../../ui_widgets/food_item.dart';
 
 //screen
@@ -29,21 +26,17 @@ class FoodieCheckOut extends StatefulWidget {
 }
 
 class _FoodieCheckOutState extends State<FoodieCheckOut> {
-  bool _loader = false;
-
-  int _selectedAddress = 0;
-
-  void selectAddress(int index) {
-    setState(() {
-      _selectedAddress = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final foodieCartProvider = Provider.of<FoodieCart>(context);
     final deliveryCharge =
         foodieCartProvider.itemsAmount > 999 ? 0 : widget.deliveryCharge;
+
+    if (foodieCartProvider.cartItems.length == 0) {
+      Future.delayed(Duration(milliseconds: 150), () {
+        Navigator.of(context).pop();
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -58,6 +51,7 @@ class _FoodieCheckOutState extends State<FoodieCheckOut> {
           child: Container(
             child: Column(
               children: [
+                SizedBox(height: 8),
                 ...foodieCartProvider.cartItems.map(
                   (cartItem) => FoodItem(
                     id: cartItem.id,
@@ -70,47 +64,8 @@ class _FoodieCheckOutState extends State<FoodieCheckOut> {
                     quantity: cartItem.quantity,
                   ),
                 ),
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.only(bottom: 10),
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  color: Colors.white,
-                  child: Text(
-                    "Free delivery for orders above Rs.999",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                PriceDetail(
-                  from: "Food",
-                  noOfItems: foodieCartProvider.cartItems.length,
-                  itemsAmount: foodieCartProvider.itemsAmount,
-                  taxAmount: foodieCartProvider.taxAmount,
-                  packagingCharge: foodieCartProvider.packagingCharge,
-                  deliveryCharge: deliveryCharge,
-                  freeDeliveryMargin: 999,
-                ),
-                // Container(
-                //   width: double.infinity,
-                //   color: Colors.white,
-                //   padding: EdgeInsets.all(6),
-                //   margin: EdgeInsets.only(bottom: 10),
-                //   alignment: Alignment.center,
-                //   child: Column(
-                //     children: [
-                //       Text(
-                //         "Now you can make cashless payments with Gpay, Phonepe and other cards when receiving your order.",
-                //         textAlign: TextAlign.center,
-                //         style: TextStyle(fontSize: 15),
-                //       ),
-                //       Text(
-                //         "For more queries contact +91 87787 96511",
-                //         textAlign: TextAlign.center,
-                //         style: TextStyle(fontSize: 15),
-                //       )
-                //     ],
-                //   ),
-                // ),
+                FreeDeliveryCard(text: "Free delivery for orders above Rs.999"),
+                CashLessPayNotice(),
               ],
             ),
           ),
@@ -125,13 +80,6 @@ class _FoodieCheckOutState extends State<FoodieCheckOut> {
         packagingCharge: foodieCartProvider.packagingCharge,
         deliveryCharge: deliveryCharge,
         freeDeliveryMargin: 999,
-        loader: _loader,
-        setLoader: (bool val) {
-          setState(() {
-            _loader = val;
-          });
-        },
-        selectedAddress: _selectedAddress,
         clearCart: foodieCartProvider.clearCart,
       ),
     );

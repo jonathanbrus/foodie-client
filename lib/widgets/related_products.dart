@@ -30,14 +30,14 @@ class RelatedProducts extends StatelessWidget {
           ),
           Container(
             width: MediaQuery.of(context).size.width,
-            height: 280,
+            height: 220,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: relatedProducts.map(
                 (product) {
                   return Container(
-                    width: 180,
-                    height: 280,
+                    width: 160,
+                    height: 220,
                     margin: EdgeInsets.all(4),
                     child: ProductGridItem(productDetail: product),
                   );

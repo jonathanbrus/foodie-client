@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/auth.dart';
+import '../providers/user.dart';
 import '../../providers/cart.dart';
 
 class CartListItem extends StatefulWidget {
@@ -29,7 +29,7 @@ class CartListItem extends StatefulWidget {
 class _CartListItemState extends State<CartListItem> {
   @override
   Widget build(BuildContext context) {
-    final token = Provider.of<Auth>(context).authToken;
+    final token = Provider.of<User>(context).authToken;
     return Container(
       margin: EdgeInsets.only(top: 5),
       color: Colors.white,
@@ -47,7 +47,9 @@ class _CartListItemState extends State<CartListItem> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.name,
+                      widget.name.length > 28
+                          ? widget.name.substring(0, 25) + "..."
+                          : widget.name,
                       style: TextStyle(fontSize: 18),
                     ),
                     Divider(height: 6),

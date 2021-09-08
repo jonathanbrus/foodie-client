@@ -1,7 +1,7 @@
 class Address {
   String fullName;
-  int phone;
-  int pincode;
+  String phone;
+  String pincode;
   String address;
   String city;
   String state;

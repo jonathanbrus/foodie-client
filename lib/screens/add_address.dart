@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../providers/auth.dart';
+import '../providers/user.dart';
 
 import '../../../ui_widgets/loader.dart';
 
@@ -19,13 +19,12 @@ class AddAddressScreenState extends State<AddAddressScreen> {
   bool _loader = false;
 
   Map<String, dynamic> _address = {
-    "FullName": "",
-    "PhoneNo": "",
-    "Pincode": "",
-    "City": "",
-    "State": "",
-    "DoorNo": "",
-    "Street": "",
+    "fullName": "",
+    "phone": "",
+    "pincode": "",
+    "city": "",
+    "state": "",
+    "address": ""
   };
 
   _submitForm(context) async {
@@ -41,14 +40,13 @@ class AddAddressScreenState extends State<AddAddressScreen> {
     });
 
     try {
-      await Provider.of<Auth>(context, listen: false).addAddress(
-        fullName: _address["FullName"],
-        phoneNo: _address["PhoneNo"],
-        pincode: _address["Pincode"],
-        city: _address["City"],
-        state: _address["State"],
-        doorNo: _address["DoorNo"],
-        street: _address["Street"],
+      await Provider.of<User>(context, listen: false).addAddress(
+        fullName: _address["fullName"],
+        phone: _address["phone"],
+        pincode: _address["pincode"],
+        address: _address["address"],
+        city: _address["city"],
+        state: _address["state"],
       );
       setState(() {
         _loader = false;
@@ -68,7 +66,6 @@ class AddAddressScreenState extends State<AddAddressScreen> {
           child: Icon(Icons.arrow_back_ios_new_rounded),
         ),
         title: Text("Add Address"),
-        toolbarHeight: 76,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -83,7 +80,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                     decoration: InputDecoration(labelText: "Full Name"),
                     textInputAction: TextInputAction.next,
                     onSaved: (value) {
-                      _address["FullName"] = value;
+                      _address["fullName"] = value;
                     },
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -98,7 +95,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                     decoration: InputDecoration(labelText: "Phone Number"),
                     textInputAction: TextInputAction.next,
                     onSaved: (value) {
-                      _address["PhoneNo"] = value;
+                      _address["phone"] = value;
                     },
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -113,7 +110,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                     decoration: InputDecoration(labelText: "Pincode"),
                     textInputAction: TextInputAction.next,
                     onSaved: (value) {
-                      _address["Pincode"] = value;
+                      _address["pincode"] = value;
                     },
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -128,7 +125,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                     decoration: InputDecoration(labelText: "City"),
                     textInputAction: TextInputAction.next,
                     onSaved: (value) {
-                      _address["City"] = value;
+                      _address["city"] = value;
                     },
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -140,7 +137,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                     decoration: InputDecoration(labelText: "State"),
                     textInputAction: TextInputAction.next,
                     onSaved: (value) {
-                      _address["State"] = value;
+                      _address["state"] = value;
                     },
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -149,24 +146,10 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                     },
                   ),
                   TextFormField(
-                    decoration:
-                        InputDecoration(labelText: "House No, Building Name"),
+                    decoration: InputDecoration(labelText: "Address"),
                     textInputAction: TextInputAction.next,
                     onSaved: (value) {
-                      _address["DoorNo"] = value;
-                    },
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "Required!";
-                      }
-                    },
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(
-                        labelText: "Road name (or) Area name (or) Colony"),
-                    textInputAction: TextInputAction.next,
-                    onSaved: (value) {
-                      _address["Street"] = value;
+                      _address["address"] = value;
                     },
                     validator: (value) {
                       if (value!.isEmpty) {

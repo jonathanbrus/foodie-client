@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -58,59 +60,106 @@ class _RestaurantState extends State<Restaurant> {
     final int deliveryCharge =
         widget.distance <= 5 ? 30 : 30 + (widget.distance - 5) * 5;
 
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          CustomSliverAppBar(
-            title: widget.name,
-            resId: widget.id,
-          ),
-          SliverList(
-            delegate: allFood.isNotEmpty
-                ? SliverChildBuilderDelegate(
-                    (BuildContext ctx, int i) {
-                      return Container(
-                        child: Consumer<FoodieCart>(
-                          builder: (ctx, cart, ch) => FoodItem(
-                            id: allFood[i].id,
-                            name: allFood[i].name,
-                            image: allFood[i].image,
-                            description: allFood[i].description,
-                            quantity: cart.quantity(allFood[i].id),
-                            fixedPrice: allFood[i].fixedPrice,
-                            offerPrice: allFood[i].offerPrice,
-                            packagingCharge: allFood[i].packagingCharge,
+    return WillPopScope(
+      onWillPop: () => showdialogue(context),
+      child: Scaffold(
+        body: CustomScrollView(
+          slivers: [
+            CustomSliverAppBar(
+              title: widget.name,
+              resId: widget.id,
+            ),
+            SliverList(
+                delegate: SliverChildListDelegate([SizedBox(height: 8)])),
+            SliverList(
+              delegate: allFood.isNotEmpty
+                  ? SliverChildBuilderDelegate(
+                      (BuildContext ctx, int i) {
+                        return Container(
+                          child: Consumer<FoodieCart>(
+                            builder: (ctx, cart, ch) => FoodItem(
+                              id: allFood[i].id,
+                              name: allFood[i].name,
+                              image: allFood[i].image,
+                              description: allFood[i].description,
+                              quantity: cart.quantity(allFood[i].id),
+                              fixedPrice: allFood[i].fixedPrice,
+                              offerPrice: allFood[i].offerPrice,
+                              packagingCharge: allFood[i].packagingCharge,
+                            ),
                           ),
+                        );
+                      },
+                      childCount: allFood.length,
+                    )
+                  : SliverChildListDelegate(
+                      [
+                        Container(
+                          height: MediaQuery.of(context).size.height - 206,
+                          child: Loader(),
                         ),
-                      );
-                    },
-                    childCount: allFood.length,
-                  )
-                : SliverChildListDelegate(
-                    [
-                      Container(
-                        height: MediaQuery.of(context).size.height - 206,
-                        child: Loader(),
-                      ),
-                    ],
+                      ],
+                    ),
+            ),
+          ],
+        ),
+        floatingActionButton: Consumer<FoodieCart>(
+          builder: (ctx, cart, ch) => cart.cartItems.length > 0
+              ? FloatingActionButton.extended(
+                  onPressed: () => Navigator.of(context).pushNamed(
+                      FoodieCheckOut.routeName,
+                      arguments: [widget.name, deliveryCharge]),
+                  icon: Icon(Icons.shopping_bag_rounded),
+                  label: Text(
+                    "${cart.itemsCount}",
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-          ),
-        ],
-      ),
-      floatingActionButton: Consumer<FoodieCart>(
-        builder: (ctx, cart, ch) => cart.cartItems.length > 0
-            ? FloatingActionButton.extended(
-                onPressed: () => Navigator.of(context).pushNamed(
-                    FoodieCheckOut.routeName,
-                    arguments: [widget.name, deliveryCharge]),
-                icon: Icon(Icons.shopping_bag_rounded),
-                label: Text(
-                  "${cart.itemsCount}",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              )
-            : Container(),
+                )
+              : Container(),
+        ),
       ),
     );
   }
+}
+
+Future<bool> showdialogue(context) async {
+  final value = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          content:
+              Text("Your cart will be cleared, Are you sure you want to exit?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              style: TextButton.styleFrom(
+                primary: Theme.of(context).primaryColor,
+                textStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            TextButton(
+              child: Text('Yes, exit'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              style: TextButton.styleFrom(
+                primary: Theme.of(context).primaryColor,
+                textStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      });
+
+  return value == true;
 }

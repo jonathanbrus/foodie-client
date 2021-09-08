@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import '../../../providers/auth.dart';
+import '../providers/user.dart';
 
 //screen
 import 'auth/auth.dart';
-// import './my_addresses.dart';
+import './my_addresses.dart';
 import './general/about_us.dart';
 import './general/terms_and_conditions.dart';
 import './general/privacy_policy.dart';
@@ -24,7 +25,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  Future<void> _showDialog(context, auth) async {
+  Future<void> _showDialog(context, user) async {
     return showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -44,8 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           TextButton(
             onPressed: () {
-              auth.signOut();
-              // SystemNavigator.pop();
+              user.signOut();
               Navigator.of(context).pushNamedAndRemoveUntil(
                 AuthScreen.routeName,
                 (route) => route.settings.name == AuthScreen.routeName,
@@ -63,7 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<Auth>(context);
+    final user = Provider.of<User>(context);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -74,9 +74,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: ListView(
             children: [
               ProfileTop(
-                name: auth.userData.name,
-                email: auth.userData.mailId,
-                phone: auth.userData.phone,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
               ),
               Container(
                 padding: EdgeInsets.only(top: 20),
@@ -98,7 +98,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ListItem(
                       title: "Addresses",
                       leading: Icons.location_city_rounded,
-                      action: () {},
+                      action: () {
+                        Navigator.of(context)
+                            .pushNamed(MyAddressesScreen.routeName);
+                      },
                     ),
                     ListItem(
                       title: "About Us",
@@ -126,23 +129,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ListItem(
                       title: "Rate Us",
                       leading: Icons.star_sharp,
-                      action: () {
-                        Navigator.of(context)
-                            .pushNamed(PrivacyPolicyScreen.routeName);
-                      },
+                      action: () => launchUrl(context),
                     ),
                     ListItem(
                       title: "Share App",
                       leading: Icons.share_rounded,
                       action: () => Share.share(
-                        "Check out this amazing online food delivery app. https://play.google.com/store/apps/details?id=com.ALO_Foodie_alo_foodie",
+                        "Check out this amazing online delivery app. https://play.google.com/store/apps/details?id=com.ALO_Foodie_alo_foodie , Alofoodie delivers food and other products all over kanyakumari district at best price.",
                       ),
                     ),
                     ListItem(
                       title: "Log Out",
                       leading: Icons.logout_rounded,
                       action: () {
-                        _showDialog(context, auth);
+                        _showDialog(context, user);
                       },
                     ),
                   ],
@@ -180,4 +180,18 @@ class ListItem extends StatelessWidget {
       ),
     );
   }
+}
+
+void launchUrl(BuildContext context) async {
+  String _url =
+      "https://play.google.com/store/apps/details?id=com.ALO_Foodie_alo_foodie";
+  // "tel:+95 6380582919";
+
+  await canLaunch(_url)
+      ? await launch(_url)
+      : ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Something went wrong when launching URL"),
+          ),
+        );
 }

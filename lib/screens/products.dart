@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 // providers
 import '../../providers/products.dart';
@@ -26,6 +25,21 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
+  late Function clearSelection;
+
+  @override
+  void deactivate() {
+    clearSelection =
+        Provider.of<Products>(context, listen: false).clearSelection;
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    clearSelection();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final productsProvider = Provider.of<Products>(context);

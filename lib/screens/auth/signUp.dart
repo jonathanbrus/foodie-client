@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/auth.dart';
+import '../../providers/user.dart';
 
 import '../../screens/home.dart';
 
@@ -39,7 +39,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     });
 
     try {
-      await Provider.of<Auth>(context, listen: false).signUp(
+      await Provider.of<User>(context, listen: false).signUp(
         name: _newUser["name"].trim(),
         email: _newUser["email"].trim(),
         phone: _newUser["phone"].trim(),

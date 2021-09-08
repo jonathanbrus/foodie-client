@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ProfileTop extends StatelessWidget {
   final String name;
   final String email;
-  final int phone;
+  final String phone;
 
   const ProfileTop(
       {required this.name, required this.email, required this.phone, Key? key})

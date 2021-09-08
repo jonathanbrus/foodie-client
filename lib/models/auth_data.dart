@@ -1,11 +1,11 @@
 class AuthData {
   String email;
   String password;
-  String token;
+  String authToken;
 
   AuthData({
     required this.email,
     required this.password,
-    required this.token,
+    required this.authToken,
   });
 }

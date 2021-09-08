@@ -16,45 +16,54 @@ class CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => Navigator.of(context)
-          .pushNamed(routeName, arguments: [title, category]),
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 6),
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Theme.of(context).primaryColor.withOpacity(0.38),
+          width: 2,
+        ),
+        borderRadius: BorderRadius.circular(8),
+        gradient: RadialGradient(
+          colors: [
+            Colors.white,
+            Theme.of(context).primaryColor.withOpacity(0.4)
+          ],
+          radius: 1.6,
+          focalRadius: 0.6,
+          center: Alignment.bottomRight,
+        ),
+      ),
+      child: InkWell(
+        onTap: () => Navigator.of(context)
+            .pushNamed(routeName, arguments: [title, category]),
+        borderRadius: BorderRadius.circular(14),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(35),
-                  ),
-                ),
-                Positioned(
-                  bottom: 8,
-                  child: Container(
-                    width: 62,
-                    height: 62,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(img),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
             Container(
-              alignment: Alignment.center,
+              margin: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               child: Text(
                 title,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+            ),
+            Spacer(),
+            Container(
+              width: double.infinity,
+              alignment: Alignment.bottomRight,
+              margin: EdgeInsets.only(right: 6, bottom: 8),
+              child: Container(
+                width: 68,
+                height: 68,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(img),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
             ),
           ],

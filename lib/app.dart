@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // providers
-import './providers/auth.dart';
+import 'providers/user.dart';
 import './foodie/providers/restaurants.dart';
 import './foodie/providers/foods.dart';
 import './foodie/providers/cart.dart';
@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: Auth()),
+        ChangeNotifierProvider.value(value: User()),
         ChangeNotifierProvider.value(value: Restaurants()),
         ChangeNotifierProvider.value(value: Foods()),
         ChangeNotifierProvider.value(value: FoodieCart()),
@@ -42,48 +42,46 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider.value(value: Cart()),
         ChangeNotifierProvider.value(value: Orders()),
       ],
-      child: Consumer<Auth>(
-        builder: (ctx, auth, ch) {
-          return MaterialApp(
-            navigatorKey: navState,
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              appBarTheme: AppBarTheme(
-                elevation: 0.5,
-                color: Color(0xffF2BB13),
-                textTheme: TextTheme(
-                  headline6: TextStyle(
-                    color: Colors.black,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              fontFamily: "OpenSans",
-              backgroundColor: Color(0xffF2BB13),
-              primaryColor: Color(0xffF2BB13),
-              accentColor: Color(0xff000000),
-              pageTransitionsTheme: PageTransitionsTheme(
-                builders: {
-                  TargetPlatform.android: CustomRouteTransitionBuilder(),
-                  TargetPlatform.iOS: CustomRouteTransitionBuilder(),
-                },
+      child: MaterialApp(
+        navigatorKey: navState,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          appBarTheme: AppBarTheme(
+            elevation: 0.5,
+            color: Color(0xffF2BB13),
+            textTheme: TextTheme(
+              headline6: TextStyle(
+                color: Colors.black,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            scrollBehavior: ConstantScrollBehavior(),
-            home: FutureBuilder<bool>(
-              future: auth.autoLogin(),
-              builder: (ctx, AsyncSnapshot<bool> snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return snapshot.data == true ? HomeScreen() : AuthScreen();
-                } else {
-                  return AuthScreen();
-                }
-              },
-            ),
-            onGenerateRoute: RouteGenerator.generateRoute,
-          );
-        },
+          ),
+          fontFamily: "OpenSans",
+          backgroundColor: Color(0xffF2BB13),
+          primaryColor: Color(0xffF2BB13),
+          accentColor: Color(0xff000000),
+          pageTransitionsTheme: PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: CustomRouteTransitionBuilder(),
+              TargetPlatform.iOS: CustomRouteTransitionBuilder(),
+            },
+          ),
+        ),
+        scrollBehavior: ConstantScrollBehavior(),
+        home: Consumer<User>(
+          builder: (ctx, user, ch) => FutureBuilder<bool>(
+            future: user.autoLogin(),
+            builder: (ctx, AsyncSnapshot<bool> snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return snapshot.data == true ? HomeScreen() : AuthScreen();
+              } else {
+                return AuthScreen();
+              }
+            },
+          ),
+        ),
+        onGenerateRoute: RouteGenerator.generateRoute,
       ),
     );
   }

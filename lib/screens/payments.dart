@@ -17,6 +17,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
           onTap: () => Navigator.maybePop(context),
           child: Icon(Icons.arrow_back_ios_new_rounded),
         ),
+        title: Text("Payments"),
       ),
       body: Center(
         child: Text("Payments Screen"),

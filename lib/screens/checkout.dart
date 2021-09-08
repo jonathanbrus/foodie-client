@@ -4,12 +4,11 @@ import 'package:provider/provider.dart';
 import '../screens/my_addresses.dart';
 
 import '../../../providers/cart.dart';
-import '../../../providers/auth.dart';
+import '../providers/user.dart';
 
 import '../../../helpers/checkout_helper.dart';
 
 import '../ui_widgets/items_summary.dart';
-import '../ui_widgets/price_detail.dart';
 
 class CheckOutScreen extends StatefulWidget {
   static const routeName = "/summary-and-checkout";
@@ -20,16 +19,6 @@ class CheckOutScreen extends StatefulWidget {
 }
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
-  bool _loader = false;
-
-  int _selectedAddress = 0;
-
-  void selectAddress(int index) {
-    setState(() {
-      _selectedAddress = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<Cart>(context);
@@ -54,9 +43,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Consumer<Auth>(
-                    builder: (ctx, auth, ch) {
-                      if (auth.userData.addresses.length <= 0) {
+                  Consumer<User>(
+                    builder: (ctx, user, ch) {
+                      if (user.addresses.length <= 0) {
                         return Container(
                           width: double.infinity,
                           child: Text(
@@ -70,27 +59,27 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              auth.userData.addresses[0].fullName,
+                              user.addresses[0].fullName,
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              auth.userData.addresses[0].phone.toString(),
+                              user.addresses[0].phone.toString(),
                               style: TextStyle(fontSize: 16),
                             ),
                             Text(
-                              auth.userData.addresses[0].address +
-                                  auth.userData.addresses[0].address,
+                              user.addresses[0].address +
+                                  user.addresses[0].address,
                               style: TextStyle(fontSize: 16),
                             ),
                             Text(
-                              auth.userData.addresses[0].city +
+                              user.addresses[0].city +
                                   "-" +
-                                  auth.userData.addresses[0].pincode.toString(),
+                                  user.addresses[0].pincode.toString(),
                               style: TextStyle(fontSize: 16),
                             ),
                             Text(
-                              auth.userData.addresses[0].state,
+                              user.addresses[0].state,
                               style: TextStyle(fontSize: 16),
                             ),
                           ],
@@ -131,15 +120,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
-            PriceDetail(
-              from: "",
-              noOfItems: cartProvider.getAllProducts.length,
-              itemsAmount: cartProvider.totalItemsAmount,
-              taxAmount: cartProvider.taxAmount,
-              packagingCharge: 0,
-              deliveryCharge: cartProvider.deliveryCharge,
-              freeDeliveryMargin: 499,
-            ),
             Container(
               width: double.infinity,
               color: Colors.white,
@@ -173,13 +153,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         packagingCharge: 0,
         deliveryCharge: cartProvider.deliveryCharge,
         freeDeliveryMargin: 499,
-        loader: _loader,
-        setLoader: (bool val) {
-          setState(() {
-            _loader = val;
-          });
-        },
-        selectedAddress: _selectedAddress,
+        // loader: _loader,
+        // setLoader: (bool val) {
+        //   setState(() {
+        //     _loader = val;
+        //   });
+        // },
+        // selectedAddress: _selectedAddress,
         clearCart: () {
           cartProvider.clearCart();
         },

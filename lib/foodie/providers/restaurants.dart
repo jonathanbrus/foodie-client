@@ -90,7 +90,7 @@ class Restaurants with ChangeNotifier {
 
     return [
       ...[...openedRes, ...closedRes]
-          .where((res) => getDistance(lat, long, res.lat, res.long) < 7)
+          .where((res) => getDistance(lat, long, res.lat, res.long) <= 5)
           .map((res) {
         res.distance = getDistance(lat, long, res.lat, res.long);
         return res;
@@ -150,8 +150,10 @@ class Restaurants with ChangeNotifier {
             rating: res["rating"],
             isActive: res["isActive"],
             offer: res["offer"] != null ? res["offer"] : 20,
-            from: res["timing"]["from"],
-            to: res["timing"]["to"],
+            from: 1,
+            // res["timing"]["from"],
+            to: 24,
+            // res["timing"]["to"],
             lat: res["geoPoint"] != null ? res["geoPoint"]["lat"] : 8.083804,
             long: res["geoPoint"] != null ? res["geoPoint"]["long"] : 77.551894,
           );

@@ -12,6 +12,7 @@ import '../widgets/bottom_navigation.dart';
 import '../widgets/banner.dart';
 import '../widgets/home_carousal.dart';
 import '../widgets/categories.dart';
+import '../widgets/home_offers.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = "/home";
@@ -36,7 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _handleMessage(RemoteMessage message) {
-    if (message.data["category"] == "food") {
+    if (message.data["category"] != null &&
+        message.data["category"] == "food") {
       Navigator.of(context).pushNamed(FoodieHome.routeName);
     } else {
       Navigator.of(context).pushNamed(
@@ -73,85 +75,40 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () =>
                 Navigator.of(context).pushNamed(CartScreen.routeName),
             icon: Icon(Icons.shopping_cart_rounded),
+            splashColor: Colors.amber,
+            splashRadius: 28,
           )
         ],
       ),
       body: DoubleBack(
         child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                HomeCarousel(screenHeight: screenHeight),
-                CategoriesSection(),
-                CustomBanner(),
-                // Container(
-                //   width: double.infinity,
-                //   height: 220,
-                //   margin: EdgeInsets.symmetric(vertical: 2),
-                //   child: ListView(
-                //     scrollDirection: Axis.horizontal,
-                //     children: [
-                //       Container(
-                //         width: 200,
-                //         height: 220,
-                //         padding: EdgeInsets.all(2),
-                //         margin: EdgeInsets.only(right: 2),
-                //         color: Colors.white,
-                //         child: Image.asset(
-                //           "assets/kcs.png",
-                //           fit: BoxFit.cover,
-                //           alignment: Alignment.bottomCenter,
-                //         ),
-                //       ),
-                //       Container(
-                //         width: 200,
-                //         height: 220,
-                //         padding: EdgeInsets.all(2),
-                //         margin: EdgeInsets.only(right: 2),
-                //         color: Colors.white,
-                //         child: Image.asset(
-                //           "assets/lcs.png",
-                //           fit: BoxFit.cover,
-                //           alignment: Alignment.bottomCenter,
-                //         ),
-                //       ),
-                //       Container(
-                //         width: 200,
-                //         height: 220,
-                //         padding: EdgeInsets.all(2),
-                //         margin: EdgeInsets.only(right: 2),
-                //         color: Colors.white,
-                //         child: Image.asset(
-                //           "assets/mcs.png",
-                //           fit: BoxFit.cover,
-                //           alignment: Alignment.bottomCenter,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                Container(
-                  width: double.infinity,
-                  color: Colors.white,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                    padding: EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                          color: Theme.of(context).primaryColor, width: 3),
-                    ),
-                    child: Text(
-                      "WE DO NOT ASK FOR YOUR BANK ACCOUNT OR CARD DETAILS VERBALLY OR TELEPHONICALLY. DO NOT DIVULGE THESE TO FRAUDSTERS & IMPOSTERS CLAIMING TO BE CALLING ON OUR BEHALF.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 10.8,
-                        fontWeight: FontWeight.bold,
-                      ),
+          child: ListView(
+            children: [
+              HomeCarousel(screenHeight: screenHeight),
+              CategoriesSection(),
+              CustomBanner(),
+              HomeOffers(),
+              Container(
+                width: double.infinity,
+                color: Colors.white,
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                        color: Theme.of(context).primaryColor, width: 3),
+                  ),
+                  child: Text(
+                    "WE DO NOT ASK FOR YOUR BANK ACCOUNT OR CARD DETAILS VERBALLY OR TELEPHONICALLY. DO NOT DIVULGE THESE TO FRAUDSTERS & IMPOSTERS CLAIMING TO BE CALLING ON OUR BEHALF.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 10.8,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                )
-              ],
-            ),
+                ),
+              )
+            ],
           ),
         ),
       ),
