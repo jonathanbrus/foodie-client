@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:lottie/lottie.dart';
 
 // providers
-import '../../providers/products.dart';
+import '../providers/products.dart';
+import '../models/product.dart';
 
 // widgets
 import '../../ui_widgets/product_item.dart';
@@ -25,6 +27,7 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
+  bool _loader = true;
   late Function clearSelection;
 
   @override
@@ -40,11 +43,20 @@ class _ProductsScreenState extends State<ProductsScreen> {
     super.dispose();
   }
 
+  Future<void> fetch(productsProvider) async {
+    await productsProvider.fetchProducts(widget.category);
+    if (mounted) {
+      setState(() {
+        _loader = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final productsProvider = Provider.of<Products>(context);
 
-    productsProvider.fetchProducts(widget.category);
+    fetch(productsProvider);
 
     List<Product> allProducts =
         productsProvider.getAllProductsByCategory(widget.category);
@@ -58,28 +70,71 @@ class _ProductsScreenState extends State<ProductsScreen> {
         title: Text(widget.title),
         backgroundColor: Theme.of(context).primaryColor,
         bottom: PreferredSize(
-          child: Categories(category: widget.category),
-          preferredSize: Size(double.infinity, 56),
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.only(left: 15, bottom: 15, right: 15),
+                child: Consumer<Products>(
+                  builder: (BuildContext ctx, foods, ch) => TextField(
+                    onChanged: (String value) {
+                      foods.setSearch(value);
+                    },
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: "Search",
+                      hintStyle: TextStyle(color: Colors.white),
+                      suffixIcon: Icon(
+                        Icons.search_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                      filled: true,
+                      fillColor: Colors.black.withOpacity(0.16),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Categories(category: widget.category),
+            ],
+          ),
+          preferredSize: Size(double.infinity, 126),
         ),
       ),
       body: SafeArea(
-        child: allProducts.isNotEmpty
-            ? GridView.builder(
-                padding: EdgeInsets.all(5),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.7,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                ),
-                itemBuilder: (ctx, index) {
-                  return ProductGridItem(
-                    productDetail: allProducts[index],
-                  );
-                },
-                itemCount: allProducts.length,
-              )
-            : Loader(),
+        child: _loader
+            ? Loader()
+            : allProducts.isNotEmpty
+                ? GridView.builder(
+                    padding: EdgeInsets.all(5),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.7,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                    ),
+                    itemBuilder: (ctx, index) {
+                      return ProductGridItem(
+                        productDetail: allProducts[index],
+                      );
+                    },
+                    itemCount: allProducts.length,
+                  )
+                : Center(
+                    child: SizedBox(
+                      width: 180,
+                      height: 180,
+                      child: Lottie.asset(
+                        "assets/lottie/emptyRes.json",
+                        repeat: true,
+                      ),
+                    ),
+                  ),
       ),
     );
   }
@@ -121,11 +176,11 @@ class _CategoriesState extends State<Categories> {
             labelStyle: TextStyle(
               color: selections.contains(categories[i])
                   ? Theme.of(context).primaryColor
-                  : Theme.of(context).accentColor.withOpacity(0.4),
+                  : Colors.black.withOpacity(0.4),
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
-            backgroundColor: Theme.of(context).accentColor.withOpacity(0.02),
+            backgroundColor: Colors.black.withOpacity(0.02),
             checkmarkColor: Theme.of(context).primaryColor,
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             shape: RoundedRectangleBorder(

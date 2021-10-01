@@ -49,6 +49,7 @@ class _CartScreenState extends State<CartScreen> {
             ? Loader()
             : ListView(
                 children: [
+                  SizedBox(height: 10),
                   ...cartProvider.getAllProducts.map((cartItem) => CartListItem(
                         id: cartItem.id,
                         name: cartItem.name,
@@ -87,13 +88,12 @@ class _CartScreenState extends State<CartScreen> {
       ),
       bottomNavigationBar: BottomContainer(
         cartItems: [...cartProvider.getAllProducts],
-        buyFrom: "AloFoodie",
-        isFood: false,
+        food: false,
         cartItemsAmount: cartProvider.totalItemsAmount,
         taxAmount: cartProvider.taxAmount,
         packagingCharge: 0,
         deliveryCharge: cartProvider.deliveryCharge,
-        freeDeliveryMargin: 999,
+        freeDeliveryMargin: 499,
         clearCart: cartProvider.clearCart,
       ),
     );

@@ -56,20 +56,12 @@ class _BottomNavigatorState extends State<BottomNavigator> {
             icon: Icons.favorite_rounded,
             setIndex: setIndex,
           ),
-          // BottomNavItem(
-          //   activeIndex: _activeIndex,
-          //   index: 3,
-          //   title: "Cart",
-          //   to: CartScreen.routeName,
-          //   icon: Icons.shopping_bag,
-          //   setIndex: setIndex,
-          // ),
           BottomNavItem(
             activeIndex: _activeIndex,
             index: 3,
             title: "Orders",
             to: OrdersScreen.routeName,
-            icon: Icons.history_rounded,
+            icon: Icons.insert_drive_file_rounded,
             setIndex: setIndex,
           ),
           BottomNavItem(
@@ -111,7 +103,7 @@ class BottomNavItem extends StatelessWidget {
   void navigateToPage(BuildContext context) {
     setIndex(index);
 
-    Navigator.of(context).pushNamed(to);
+    Navigator.of(context).pushReplacementNamed(to);
   }
 
   @override
@@ -137,11 +129,11 @@ class BottomNavItem extends StatelessWidget {
               style: isActive()
                   ? TextStyle(
                       color: Theme.of(context).primaryColor,
-                      fontSize: 12,
+                      fontSize: 14,
                     )
                   : TextStyle(
                       color: Colors.grey,
-                      fontSize: 0,
+                      fontSize: 11.4,
                     ),
             ),
           ],

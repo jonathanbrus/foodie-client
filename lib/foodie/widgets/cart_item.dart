@@ -1,34 +1,25 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/painting.dart';
 import 'package:provider/provider.dart';
 
-import '../foodie/providers/cart.dart';
+import '../providers/cart.dart';
 
-class FoodItem extends StatelessWidget {
-  final String id;
-  final String name;
-  final String image;
-  final String description;
-  final int fixedPrice;
-  final int offerPrice;
-  final int packagingCharge;
-  final int quantity;
+import '../../models/cart_item.dart';
 
-  const FoodItem({
-    required this.id,
-    required this.name,
-    required this.image,
-    required this.description,
-    required this.fixedPrice,
-    required this.offerPrice,
-    required this.packagingCharge,
-    required this.quantity,
+import '../../ui_widgets/price_tag.dart';
+
+class FoodCartItem extends StatelessWidget {
+  final CartItem cartItem;
+
+  const FoodCartItem({
+    required this.cartItem,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // final int offer = (((fixedPrice - offerPrice) / fixedPrice) * 100).ceil();
     return Card(
       margin: EdgeInsets.only(bottom: 8, left: 8, right: 8),
       elevation: 4,
@@ -45,9 +36,9 @@ class FoodItem extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: CachedNetworkImage(
-                      width: 120,
-                      height: 120,
-                      imageUrl: image,
+                      width: 100,
+                      height: 100,
+                      imageUrl: cartItem.image,
                       fit: BoxFit.cover,
                       placeholder: (ctx, url) => Image.asset(
                         "assets/fallback.jpg",
@@ -60,7 +51,7 @@ class FoodItem extends StatelessWidget {
             ),
             Expanded(
               child: Container(
-                height: 132,
+                height: 112,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -68,7 +59,7 @@ class FoodItem extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.only(top: 6, right: 6),
                       child: Text(
-                        name,
+                        cartItem.name,
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -77,53 +68,61 @@ class FoodItem extends StatelessWidget {
                     ),
                     Expanded(
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          DropdownButtonHideUnderline(
-                            child: DropdownButton(
-                              style: TextStyle(fontSize: 14),
-                              items: [
-                                DropdownMenuItem(child: Text("Addons")),
+                          if (cartItem.addon != null)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("Addon"),
+                                Text(
+                                    "${cartItem.addon} \u{20B9}${cartItem.addonPrice}"),
                               ],
                             ),
-                          ),
-                          DropdownButtonHideUnderline(
-                            child: DropdownButton(
-                              style: TextStyle(fontSize: 14),
-                              items: [
-                                DropdownMenuItem(child: Text("Toppings")),
+                          if (cartItem.topping != null)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("Topping"),
+                                Text(
+                                    "${cartItem.topping} \u{20B9}${cartItem.toppingPrice}"),
                               ],
                             ),
-                          ),
-                          DropdownButtonHideUnderline(
-                            child: DropdownButton(
-                              style: TextStyle(fontSize: 14),
-                              items: [
-                                DropdownMenuItem(child: Text("Size")),
+                          if (cartItem.size != null)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("Size"),
+                                Text(
+                                    "${cartItem.size} \u{20B9}${cartItem.sizePrice}"),
                               ],
                             ),
-                          ),
+                          if (cartItem.bun != null)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("Bun"),
+                                Text(
+                                    "${cartItem.bun} \u{20B9}${cartItem.bunPrice}"),
+                              ],
+                            ),
+                          SizedBox(width: 6),
                         ],
                       ),
                     ),
                     Row(
                       children: [
-                        Text(
-                          "Rs.$offerPrice",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Rs.$fixedPrice",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.redAccent,
-                            decoration: TextDecoration.lineThrough,
-                          ),
+                        PriceTag(
+                          fixedPrice: cartItem.fixedPrice,
+                          offerPrice: cartItem.offerPrice,
+                          fixedPriceSize: 14,
+                          offerPriceSize: 16,
+                          offerPercentSize: 12,
                         ),
                         Spacer(),
                         Container(
@@ -133,14 +132,16 @@ class FoodItem extends StatelessWidget {
                             borderRadius:
                                 BorderRadius.only(topLeft: Radius.circular(16)),
                           ),
-                          child: Consumer<FoodieCart>(
-                            builder: (ctx, cart, ch) => Row(
+                          child: Consumer<FoodieCart>(builder: (ctx, cart, ch) {
+                            int quantity = cart.quantity(cartItem.id);
+
+                            return Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 QtyButton(
                                   icon: Icons.remove_rounded,
-                                  onPressed: () => cart.removeItem(id),
+                                  onPressed: () => cart.removeItem(cartItem.id),
                                 ),
                                 AnimatedContainer(
                                   duration: Duration(milliseconds: 250),
@@ -157,17 +158,17 @@ class FoodItem extends StatelessWidget {
                                 QtyButton(
                                   icon: Icons.add_rounded,
                                   onPressed: () => cart.addItem(
-                                    id,
-                                    name,
-                                    image,
-                                    fixedPrice,
-                                    offerPrice,
-                                    packagingCharge,
+                                    cartItem.id,
+                                    cartItem.name,
+                                    cartItem.image,
+                                    cartItem.fixedPrice,
+                                    cartItem.offerPrice,
+                                    cartItem.packagingCharge,
                                   ),
                                 ),
                               ],
-                            ),
-                          ),
+                            );
+                          }),
                         ),
                       ],
                     ),

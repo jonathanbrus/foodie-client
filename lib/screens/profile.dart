@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../providers/user.dart';
 
 //screen
-import 'auth/auth.dart';
+import './auth/auth.dart';
 import './my_addresses.dart';
 import './general/about_us.dart';
 import './general/terms_and_conditions.dart';
@@ -29,7 +29,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("Are you sure?"),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         content: Container(
           child: Text("Are you sure you want to sign out?"),
         ),
@@ -41,6 +43,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Text("Cancel"),
             style: TextButton.styleFrom(
               primary: Theme.of(context).primaryColor,
+              textStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           TextButton(
@@ -54,6 +59,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Text("Yes"),
             style: TextButton.styleFrom(
               primary: Theme.of(context).primaryColor,
+              textStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -90,11 +98,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: double.infinity,
                 child: Column(
                   children: [
-                    ListItem(
-                      title: "Edit Profile",
-                      leading: Icons.edit_rounded,
-                      action: () {},
-                    ),
+                    // ListItem(
+                    //   title: "Edit Profile",
+                    //   leading: Icons.edit_rounded,
+                    //   action: () {},
+                    // ),
                     ListItem(
                       title: "Addresses",
                       leading: Icons.location_city_rounded,
@@ -110,6 +118,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Navigator.of(context)
                             .pushNamed(AboutUsScreen.routeName);
                       },
+                    ),
+                    ListItem(
+                      title: "Contact Us",
+                      leading: Icons.phone_callback_rounded,
+                      action: () => launchUrl(context, "tel:+91 8778796511"),
+                    ),
+                    ListItem(
+                      title: "Send Feedback",
+                      leading: Icons.messenger_rounded,
+                      action: () => launchUrl(
+                          context, "whatsapp://send?phone=+91 8778796511"),
                     ),
                     ListItem(
                       title: "Terms and Conditions",
@@ -129,7 +148,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ListItem(
                       title: "Rate Us",
                       leading: Icons.star_sharp,
-                      action: () => launchUrl(context),
+                      action: () => launchUrl(context,
+                          "https://play.google.com/store/apps/details?id=com.ALO_Foodie_alo_foodie"),
                     ),
                     ListItem(
                       title: "Share App",
@@ -182,13 +202,9 @@ class ListItem extends StatelessWidget {
   }
 }
 
-void launchUrl(BuildContext context) async {
-  String _url =
-      "https://play.google.com/store/apps/details?id=com.ALO_Foodie_alo_foodie";
-  // "tel:+95 6380582919";
-
-  await canLaunch(_url)
-      ? await launch(_url)
+void launchUrl(BuildContext context, String url) async {
+  await canLaunch(url)
+      ? await launch(url)
       : ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Something went wrong when launching URL"),

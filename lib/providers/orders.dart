@@ -4,58 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class OrderItem {
-  final String name;
-  final String image;
-  final int price;
-  final int quantity;
-
-  OrderItem({
-    required this.name,
-    required this.image,
-    required this.price,
-    required this.quantity,
-  });
-
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "image": image,
-        "price": price,
-        "quantity": quantity,
-      };
-}
-
-class Order {
-  final String id;
-  final bool isFood;
-  final String buyFrom;
-  final List<OrderItem> orderItems;
-  final Map shippingAddress;
-  final String paymentMethod;
-  final int taxAmount;
-  final int deliveryCharge;
-  final int totalAmount;
-  String orderStatus;
-  final bool isPaid;
-  final DateTime createdAt;
-  // final DateTime deliveredAt;
-
-  Order({
-    required this.id,
-    required this.isFood,
-    required this.buyFrom,
-    required this.orderItems,
-    required this.shippingAddress,
-    required this.paymentMethod,
-    required this.isPaid,
-    required this.taxAmount,
-    required this.deliveryCharge,
-    required this.totalAmount,
-    required this.orderStatus,
-    required this.createdAt,
-    // required this.deliveredAt
-  });
-}
+import '../models/order.dart';
 
 class Orders with ChangeNotifier {
   List<Order> _orders = [];
@@ -68,10 +17,10 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
-  Future<void> fetchAllOrders(String token) async {
-    var url = Uri.parse("https://alofoodie-v2.herokuapp.com/user/myOrders");
+  Future<void> fetchAllOrders(String token, bool refresh) async {
+    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/myOrders");
 
-    if (_initialFetch && !_noOrdersYet) {
+    if ((_initialFetch && !_noOrdersYet) || refresh) {
       try {
         final response = await http.get(url, headers: {
           HttpHeaders.authorizationHeader: '$token',
@@ -83,7 +32,7 @@ class Orders with ChangeNotifier {
           ...(decoded["myOrders"] as List<dynamic>).map((order) {
             return Order(
               id: order["_id"],
-              isFood: order["isFood"],
+              food: order["food"] == null ? order["isFood"] : order["food"],
               orderItems: (order["orderItems"] as List<dynamic>)
                   .map(
                     (item) => OrderItem(
@@ -91,6 +40,10 @@ class Orders with ChangeNotifier {
                       image: item["image"],
                       price: item["price"],
                       quantity: item["quantity"],
+                      addon: item["addon"],
+                      topping: item["topping"],
+                      size: item["size"],
+                      bun: item["bun"],
                     ),
                   )
                   .toList(),
@@ -107,7 +60,7 @@ class Orders with ChangeNotifier {
               totalAmount: order["totalAmount"] == null
                   ? order["totalPrice"]
                   : order["totalAmount"],
-              isPaid: order["isPaid"],
+              paid: order["paid"],
               orderStatus: order["orderStatus"],
               createdAt: DateTime.parse(order["createdAt"]),
             );
@@ -124,30 +77,30 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> placeOrder(
-      {required String userId,
-      required bool isFood,
+      {required bool food,
       required String buyFrom,
       required List<OrderItem> orderItems,
       required Map shippingAddress,
       required String paymentMethod,
       required int taxAmount,
       required int deliveryCharge,
+      required int packingCharge,
       required int totalAmount,
       required String token}) async {
-    var url = Uri.parse("https://alofoodie-v2.herokuapp.com/user/placeOrder");
+    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/placeOrder");
 
     try {
       final response = await http.post(url, headers: {
         HttpHeaders.authorizationHeader: token
       }, body: {
-        "userId": userId.toString(),
-        "isFood": isFood.toString(),
+        "food": "$food",
         "buyFrom": buyFrom.toString(),
         "orderItems": json.encode(orderItems),
         "shippingAddress": json.encode(shippingAddress),
         "paymentMethod": paymentMethod.toString(),
         "taxAmount": taxAmount.toString(),
         "deliveryCharge": deliveryCharge.toString(),
+        "packingCharge": packingCharge.toString(),
         "totalAmount": totalAmount.toString(),
       });
 
@@ -157,7 +110,7 @@ class Orders with ChangeNotifier {
         0,
         Order(
           id: decodedNewOrder["newOrder"]["_id"],
-          isFood: isFood,
+          food: food,
           buyFrom: decodedNewOrder["newOrder"]["buyFrom"],
           orderItems: orderItems,
           shippingAddress: shippingAddress,
@@ -165,7 +118,7 @@ class Orders with ChangeNotifier {
           taxAmount: taxAmount,
           deliveryCharge: deliveryCharge,
           totalAmount: totalAmount,
-          isPaid: decodedNewOrder["newOrder"]["isPaid"],
+          paid: decodedNewOrder["newOrder"]["paid"],
           orderStatus: decodedNewOrder["newOrder"]["orderStatus"],
           createdAt: DateTime.parse(decodedNewOrder["newOrder"]["createdAt"]),
         ),
@@ -176,7 +129,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> cancelOrder(String orderId, String token) async {
-    var url = Uri.parse("https://alofoodie-v2.herokuapp.com/user/cancelOrder");
+    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/cancelOrder");
 
     try {
       await http.delete(url,
@@ -193,8 +146,6 @@ class Orders with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print(e);
-      notifyListeners();
     }
-    notifyListeners();
   }
 }

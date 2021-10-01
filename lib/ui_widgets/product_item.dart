@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import '../providers/products.dart';
+import '../models/product.dart';
 
 import '../screens/product_details.dart';
 

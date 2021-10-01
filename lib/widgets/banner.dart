@@ -11,7 +11,7 @@ class CustomBanner extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
-      margin: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+      margin: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
       child: GestureDetector(
         onTap: () => Navigator.of(context)
             .push(MaterialPageRoute(builder: (ctx) => PrimeNotice())),

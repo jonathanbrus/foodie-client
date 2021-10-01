@@ -132,22 +132,28 @@ class _OrderDetailScreenState extends State<OrderDetailsScreen> {
                         ),
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            item.name,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 2),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              child: Text(
+                                item.name,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
-                          Text("Quantity ${item.quantity}"),
-                          Text("\u{20B9}${item.price}"),
-                        ],
+                            Text("Quantity ${item.quantity}"),
+                            Text("\u{20B9}${item.price}"),
+                          ],
+                        ),
                       ),
                     )
                   ],
@@ -279,7 +285,7 @@ class _OrderDetailScreenState extends State<OrderDetailsScreen> {
                       Text(
                         order.orderStatus == "Canceled"
                             ? "Canceled"
-                            : order.isPaid
+                            : order.paid
                                 ? "Paid"
                                 : "Payment Pending",
                         style: TextStyle(
@@ -290,19 +296,19 @@ class _OrderDetailScreenState extends State<OrderDetailsScreen> {
                 ],
               ),
             ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 10),
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: Icon(Icons.redo_rounded),
-                label: Text("Order Again"),
-                style: TextButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: Colors.green,
-                ),
-              ),
-            ),
-            if (!order.isFood)
+            // Container(
+            //   margin: EdgeInsets.symmetric(horizontal: 10),
+            //   child: ElevatedButton.icon(
+            //     onPressed: () => orderProvier.placeOrder(food: order.food, buyFrom: order.buyFrom, orderItems: order.orderItems, shippingAddress: order.shippingAddress, paymentMethod: order.paymentMethod, taxAmount: order.taxAmount, deliveryCharge: order.deliveryCharge, packingCharge: order.packingCharge, totalAmount: order.totalAmount, token: token),
+            //     icon: Icon(Icons.redo_rounded),
+            //     label: Text("Order Again"),
+            //     style: TextButton.styleFrom(
+            //       elevation: 0,
+            //       backgroundColor: Colors.green,
+            //     ),
+            //   ),
+            // ),
+            if (!order.food)
               Container(
                 margin:
                     EdgeInsets.only(left: 10, top: 0, right: 10, bottom: 10),
@@ -310,7 +316,7 @@ class _OrderDetailScreenState extends State<OrderDetailsScreen> {
                   onPressed: order.orderStatus.toLowerCase() == "order placed"
                       ? () => cancelOrder(
                           context, orderProvier.cancelOrder, order.id)
-                      : () {},
+                      : null,
                   icon: Icon(Icons.cancel_rounded),
                   label: Text("Cancel Order"),
                   style: TextButton.styleFrom(

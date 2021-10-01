@@ -13,12 +13,11 @@ import './providers/orders.dart';
 //Routes
 import './helpers/route_generator.dart';
 
-//Page Transition
-import 'helpers/route_animation.dart';
-
 // screens
 import './screens/home.dart';
 import './screens/auth/auth.dart';
+
+import './constants/theme_data.dart';
 
 GlobalKey<NavigatorState> navState = GlobalKey<NavigatorState>();
 
@@ -30,6 +29,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final ThemeData theme = ThemeData();
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -45,29 +45,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         navigatorKey: navState,
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          appBarTheme: AppBarTheme(
-            elevation: 0.5,
-            color: Color(0xffF2BB13),
-            textTheme: TextTheme(
-              headline6: TextStyle(
-                color: Colors.black,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          fontFamily: "OpenSans",
-          backgroundColor: Color(0xffF2BB13),
-          primaryColor: Color(0xffF2BB13),
-          accentColor: Color(0xff000000),
-          pageTransitionsTheme: PageTransitionsTheme(
-            builders: {
-              TargetPlatform.android: CustomRouteTransitionBuilder(),
-              TargetPlatform.iOS: CustomRouteTransitionBuilder(),
-            },
-          ),
-        ),
+        theme: themeData,
         scrollBehavior: ConstantScrollBehavior(),
         home: Consumer<User>(
           builder: (ctx, user, ch) => FutureBuilder<bool>(

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 // Foodie Screens
-import '../foodie/screens/foodie_home.dart';
+import '../foodie/screens/home.dart';
 import '../foodie/screens/restaurant.dart';
-import '../foodie/screens/foodie_checkout.dart';
+import '../foodie/screens/cart.dart';
 
 // Screens
 import '../screens/auth/auth.dart';
+import '../screens/auth/verify_otp.dart';
 import '../screens/home.dart';
 import '../screens/profile.dart';
 import '../screens/my_addresses.dart';
@@ -17,7 +18,6 @@ import '../screens/wishlist.dart';
 import '../screens/cart.dart';
 import '../screens/orders.dart';
 import '../screens/order_details.dart';
-import '../screens/checkout.dart';
 import '../screens/payments.dart';
 
 import '../screens/general/about_us.dart';
@@ -31,6 +31,17 @@ class RouteGenerator {
     switch (settings.name) {
       case AuthScreen.routeName:
         return MaterialPageRoute(builder: (ctx) => AuthScreen());
+
+      case OtpVerifyScreen.routeName:
+        if (args is List) {
+          return MaterialPageRoute(
+            builder: (ctx) => OtpVerifyScreen(
+              from: args[0],
+              phone: args[1],
+            ),
+          );
+        }
+        return _errorRoute();
 
       case FoodieHome.routeName:
         return MaterialPageRoute(builder: (ctx) => FoodieHome());
@@ -51,10 +62,7 @@ class RouteGenerator {
       case FoodieCheckOut.routeName:
         if (args is List) {
           return MaterialPageRoute(
-            builder: (ctx) => FoodieCheckOut(
-              restaurantName: args[0],
-              deliveryCharge: args[1],
-            ),
+            builder: (ctx) => FoodieCheckOut(),
           );
         }
         return _errorRoute();
@@ -111,11 +119,16 @@ class RouteGenerator {
         }
         return _errorRoute();
 
-      case CheckOutScreen.routeName:
-        return MaterialPageRoute(builder: (ctx) => CheckOutScreen());
-
       case PaymentsScreen.routeName:
-        return MaterialPageRoute(builder: (ctx) => PaymentsScreen());
+        if (args is List) {
+          return MaterialPageRoute(
+            builder: (ctx) => PaymentsScreen(
+              addressIndex: args[0],
+              food: args[1],
+            ),
+          );
+        }
+        return _errorRoute();
 
       case AboutUsScreen.routeName:
         return MaterialPageRoute(builder: (ctx) => AboutUsScreen());

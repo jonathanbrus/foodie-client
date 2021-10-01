@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/addresses.dart';
+import '../models/address.dart';
 
 Future<Map<String, dynamic>> setData({
   required user,
@@ -10,6 +10,8 @@ Future<Map<String, dynamic>> setData({
   required authToken,
 }) async {
   final prefs = await SharedPreferences.getInstance();
+  prefs.clear();
+  prefs.reload();
 
   final String name = user["name"];
   final String email = user["email"];
@@ -17,7 +19,7 @@ Future<Map<String, dynamic>> setData({
   final bool primeMember = user["primeMember"];
 
   List<Address> addresses = [
-    ...user["userAddress"].map(
+    ...user["addresses"].map(
       (address) => Address(
         fullName: address["fullName"],
         phone: address["phone"],
@@ -95,6 +97,25 @@ void clearData() async {
   await prefs.clear();
 }
 
-Future<List> updateAddress({required addresses}) async {
-  return [];
+Future<List<Address>> updateAddress({
+  required List rawAddresses,
+}) async {
+  final prefs = await SharedPreferences.getInstance();
+
+  List<Address> addresses = [
+    ...rawAddresses.map(
+      (address) => Address(
+        fullName: address["fullName"],
+        phone: address["phone"],
+        pincode: address["pincode"],
+        address: address["address"],
+        city: address["city"],
+        state: address["state"],
+      ),
+    )
+  ];
+
+  await prefs.setString("addresses", json.encode(addresses));
+
+  return addresses;
 }

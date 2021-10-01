@@ -69,7 +69,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
                 Positioned(
-                  top: 160,
+                  top: mediaQuery.size.height * 0.16,
                   left: 0,
                   right: 0,
                   child: Column(
@@ -102,9 +102,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                           TextButton(
                             style: TextButton.styleFrom(
-                              primary: Theme.of(context)
-                                  .accentColor
-                                  .withOpacity(0.2),
+                              primary: Colors.black.withOpacity(0.2),
                             ),
                             onPressed: setSignInUp,
                             child: Text(

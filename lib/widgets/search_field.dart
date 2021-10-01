@@ -41,7 +41,7 @@ class _SearchFieldState extends State<SearchField> {
             size: 28,
           ),
           filled: true,
-          fillColor: Theme.of(context).accentColor.withOpacity(0.16),
+          fillColor: Colors.black.withOpacity(0.16),
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30),

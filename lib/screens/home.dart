@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:share_plus/share_plus.dart';
 
 import './cart.dart';
 
-import '../foodie/screens/foodie_home.dart';
+import '../foodie/screens/home.dart';
 import '../screens/products.dart';
 
 //widgets
+import '../ui_widgets/home_carousal.dart';
+
 import '../widgets/double_back.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/banner.dart';
-import '../widgets/home_carousal.dart';
 import '../widgets/categories.dart';
-import '../widgets/home_offers.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = "/home";
@@ -40,7 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (message.data["category"] != null &&
         message.data["category"] == "food") {
       Navigator.of(context).pushNamed(FoodieHome.routeName);
-    } else {
+    }
+    if (message.data["category"] != null) {
       Navigator.of(context).pushNamed(
         ProductsScreen.routeName,
         arguments: [
@@ -84,25 +86,56 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SafeArea(
           child: ListView(
             children: [
-              HomeCarousel(screenHeight: screenHeight),
+              HomeCarousel(
+                uri: "home",
+                screenHeight: screenHeight,
+              ),
               CategoriesSection(),
               CustomBanner(),
-              HomeOffers(),
+              Container(
+                margin: EdgeInsets.all(10),
+                child: Text(
+                  "Share Our App",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width * 0.048,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Card(
+                margin: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: InkWell(
+                  onTap: () => Share.share(
+                    "Check out this amazing online delivery app. https://play.google.com/store/apps/details?id=com.ALO_Foodie_alo_foodie , Alofoodie delivers food and other products all over kanyakumari district at best price.",
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset("assets/poster.jpeg"),
+                  ),
+                ),
+              ),
               Container(
                 width: double.infinity,
                 color: Colors.white,
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                  padding: EdgeInsets.all(6),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
                     border: Border.all(
-                        color: Theme.of(context).primaryColor, width: 3),
+                      color: Theme.of(context).primaryColor,
+                      width: 3,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     "WE DO NOT ASK FOR YOUR BANK ACCOUNT OR CARD DETAILS VERBALLY OR TELEPHONICALLY. DO NOT DIVULGE THESE TO FRAUDSTERS & IMPOSTERS CLAIMING TO BE CALLING ON OUR BEHALF.",
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.justify,
                     style: TextStyle(
-                      fontSize: 10.8,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

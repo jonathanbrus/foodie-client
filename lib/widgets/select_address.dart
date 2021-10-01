@@ -4,20 +4,33 @@ import 'package:provider/provider.dart';
 import '../providers/user.dart';
 
 import '../screens/payments.dart';
+import '../screens/add_address.dart';
 
-class AddressSelection extends StatelessWidget {
-  final int? index;
-  final Function setState;
+class SelectAddress extends StatefulWidget {
+  final bool food;
+  const SelectAddress({
+    required this.food,
+    Key? key,
+  }) : super(key: key);
 
-  const AddressSelection(
-      {required this.index, required this.setState, Key? key})
-      : super(key: key);
+  @override
+  _SelectAddressState createState() => _SelectAddressState();
+}
+
+class _SelectAddressState extends State<SelectAddress> {
+  int _index = 0;
+
+  void setIndex(int? index) {
+    setState(() {
+      _index = int.parse("$index");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final addresses = Provider.of<User>(context).addresses;
     final double height = addresses.length < 3
-        ? (addresses.length * 98) + 108
+        ? (addresses.length * 99) + 108
         : MediaQuery.of(context).size.height * 0.48;
 
     return Container(
@@ -34,9 +47,12 @@ class AddressSelection extends StatelessWidget {
                 ),
                 Spacer(),
                 ElevatedButton(
-                  onPressed: () => Navigator.of(context).popAndPushNamed(
-                    PaymentsScreen.routeName,
-                  ),
+                  onPressed: addresses.length == 0
+                      ? null
+                      : () => Navigator.of(context).popAndPushNamed(
+                            PaymentsScreen.routeName,
+                            arguments: [_index, widget.food],
+                          ),
                   child: Text("To Payment"),
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
@@ -59,21 +75,21 @@ class AddressSelection extends StatelessWidget {
                     margin: EdgeInsets.only(bottom: 8, left: 8, right: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: i == index
+                      color: i == _index
                           ? Theme.of(context).primaryColor.withOpacity(0.26)
                           : Colors.grey.withOpacity(0.24),
                     ),
                     child: RadioListTile<int?>(
                       title: Address(address: address),
                       value: i,
-                      groupValue: index,
+                      groupValue: _index,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       onChanged: (int? value) {
-                        setState(value);
+                        setIndex(value);
                       },
                     ),
                   );
@@ -81,7 +97,9 @@ class AddressSelection extends StatelessWidget {
                 Container(
                   margin: EdgeInsets.only(bottom: 10, left: 8, right: 8),
                   child: TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () => Navigator.of(context).popAndPushNamed(
+                      AddAddressScreen.routeName,
+                    ),
                     icon: Icon(
                       Icons.add_rounded,
                       size: 20,
@@ -129,7 +147,7 @@ class Address extends StatelessWidget {
             style: TextStyle(fontSize: 15),
           ),
           Text(
-            address.city + address.pincode,
+            address.city + " - " + address.pincode,
             style: TextStyle(fontSize: 15),
           ),
         ],
@@ -138,8 +156,7 @@ class Address extends StatelessWidget {
   }
 }
 
-void showAddressSelection(BuildContext context, int? index) =>
-    showModalBottomSheet(
+void showSelectAddress(BuildContext context, bool food) => showModalBottomSheet(
       isScrollControlled: true,
       context: context,
       shape: RoundedRectangleBorder(
@@ -150,11 +167,8 @@ void showAddressSelection(BuildContext context, int? index) =>
       ),
       builder: (context) {
         return StatefulBuilder(
-          builder: (context, setState) => AddressSelection(
-            index: index,
-            setState: (value) => setState(() {
-              index = value;
-            }),
+          builder: (context, setState) => SelectAddress(
+            food: food,
           ),
         );
       },

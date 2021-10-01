@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/user.dart';
 
 import '../../screens/home.dart';
+// import '../../screens/auth/verify_otp.dart';
 
 class SignInScreen extends StatefulWidget {
   static const routeName = "/sign-in";
@@ -15,6 +16,7 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   final _form = GlobalKey<FormState>();
+  bool _toggle = false;
 
   bool _loader = false;
 
@@ -86,6 +88,7 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
             ),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
@@ -114,8 +117,23 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               SizedBox(height: 12),
               TextFormField(
-                decoration: InputDecoration(labelText: "password"),
-                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: "password",
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _toggle = !_toggle;
+                      });
+                    },
+                    child: Icon(
+                      _toggle
+                          ? Icons.visibility_rounded
+                          : Icons.visibility_off_rounded,
+                      size: 26,
+                    ),
+                  ),
+                ),
+                obscureText: !_toggle,
                 onSaved: (value) {
                   _detail["password"] = value;
                 },
@@ -142,6 +160,19 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                 ),
               ),
+              SizedBox(height: 6),
+              // GestureDetector(
+              //   onTap: () => Navigator.of(context).pushNamed(
+              //     OtpVerifyScreen.routeName,
+              //     arguments: ["forgotPassword", ""],
+              //   ),
+              //   child: Text(
+              //     "Forgot Password",
+              //     style: TextStyle(
+              //       fontSize: 12,
+              //     ),
+              //   ),
+              // )
             ],
           ),
         ],

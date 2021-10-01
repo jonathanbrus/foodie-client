@@ -5,19 +5,12 @@ import '../providers/cart.dart';
 
 import '../../../helpers/checkout_helper.dart';
 
-import '../../ui_widgets/food_item.dart';
-
-//screen
-// import '../../screens/my_addresses.dart';
+import '../widgets/cart_item.dart';
 
 class FoodieCheckOut extends StatefulWidget {
   static const routeName = "/food-checkout";
-  final String restaurantName;
-  final int deliveryCharge;
 
   const FoodieCheckOut({
-    required this.restaurantName,
-    required this.deliveryCharge,
     Key? key,
   }) : super(key: key);
 
@@ -29,14 +22,6 @@ class _FoodieCheckOutState extends State<FoodieCheckOut> {
   @override
   Widget build(BuildContext context) {
     final foodieCartProvider = Provider.of<FoodieCart>(context);
-    final deliveryCharge =
-        foodieCartProvider.itemsAmount > 999 ? 0 : widget.deliveryCharge;
-
-    if (foodieCartProvider.cartItems.length == 0) {
-      Future.delayed(Duration(milliseconds: 150), () {
-        Navigator.of(context).pop();
-      });
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -53,17 +38,27 @@ class _FoodieCheckOutState extends State<FoodieCheckOut> {
               children: [
                 SizedBox(height: 8),
                 ...foodieCartProvider.cartItems.map(
-                  (cartItem) => FoodItem(
-                    id: cartItem.id,
-                    name: cartItem.name,
-                    image: cartItem.image,
-                    description: cartItem.name,
-                    fixedPrice: cartItem.fixedPrice,
-                    offerPrice: cartItem.offerPrice,
-                    packagingCharge: cartItem.packagingCharge,
-                    quantity: cartItem.quantity,
+                  (cartItem) => FoodCartItem(
+                    cartItem: cartItem,
                   ),
                 ),
+                if (foodieCartProvider.cartItems.isEmpty)
+                  Container(
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Check your orders in my orders page !",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                 FreeDeliveryCard(text: "Free delivery for orders above Rs.999"),
                 CashLessPayNotice(),
               ],
@@ -73,12 +68,11 @@ class _FoodieCheckOutState extends State<FoodieCheckOut> {
       ),
       bottomNavigationBar: BottomContainer(
         cartItems: [...foodieCartProvider.cartItems],
-        buyFrom: widget.restaurantName,
-        isFood: true,
-        cartItemsAmount: foodieCartProvider.itemsAmount,
+        food: true,
+        cartItemsAmount: foodieCartProvider.totalItemsAmount,
         taxAmount: foodieCartProvider.taxAmount,
         packagingCharge: foodieCartProvider.packagingCharge,
-        deliveryCharge: deliveryCharge,
+        deliveryCharge: foodieCartProvider.deliveryCharge,
         freeDeliveryMargin: 999,
         clearCart: foodieCartProvider.clearCart,
       ),

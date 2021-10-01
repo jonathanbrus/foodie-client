@@ -4,25 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class CartItem {
-  final String id;
-  final String name;
-  final String image;
-  final int fixedPrice;
-  final int offerPrice;
-  final int deliveryCharge;
-  int quantity;
-
-  CartItem({
-    required this.id,
-    required this.name,
-    required this.image,
-    required this.fixedPrice,
-    required this.offerPrice,
-    required this.deliveryCharge,
-    required this.quantity,
-  });
-}
+import '../models/cart_item.dart';
 
 class Cart with ChangeNotifier {
   List _cart = [];
@@ -46,11 +28,7 @@ class Cart with ChangeNotifier {
   }
 
   int get deliveryCharge {
-    int amount = 0;
-    _cart.forEach((item) {
-      amount = (amount + item.deliveryCharge).toInt();
-    });
-    return amount;
+    return _cart.isEmpty ? 0 : 30;
   }
 
   List<CartItem> get getAllProducts {
@@ -58,7 +36,7 @@ class Cart with ChangeNotifier {
   }
 
   Future<void> myCart(String token) async {
-    var url = Uri.parse("https://alofoodie-v2.herokuapp.com/user/myCart");
+    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/myCart");
 
     if (_intialLoad) {
       try {
@@ -76,10 +54,13 @@ class Cart with ChangeNotifier {
                 image: item["image"],
                 fixedPrice: item["fixedPrice"],
                 offerPrice: item["offerPrice"],
-                deliveryCharge: item["deliveryCharge"] == null
-                    ? 40
-                    : item["deliveryCharge"],
                 quantity: item["quantity"],
+                packagingCharge: 0,
+                deliveryCharge: 40,
+                addonPrice: 0,
+                bunPrice: 0,
+                sizePrice: 0,
+                toppingPrice: 0,
               ),
             )
             .toList();
@@ -108,11 +89,16 @@ class Cart with ChangeNotifier {
       name: name,
       fixedPrice: fixedPrice,
       offerPrice: offerPrice,
+      packagingCharge: 0,
       deliveryCharge: deliveryCharge,
+      addonPrice: 0,
+      bunPrice: 0,
+      sizePrice: 0,
+      toppingPrice: 0,
       quantity: 1,
     );
 
-    var url = Uri.parse("https://alofoodie-v2.herokuapp.com/user/addToCart");
+    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/addToCart");
 
     try {
       if (_cart.where((element) => element.id == id).isEmpty) {
@@ -129,12 +115,12 @@ class Cart with ChangeNotifier {
       print(e);
     }
 
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<void> removeFromCart(String id, String token) async {
     var url =
-        Uri.parse("https://alofoodie-v2.herokuapp.com/user/removeFromCart");
+        Uri.parse("https://alofoodie-1.herokuapp.com/user/removeFromCart");
 
     try {
       await http.delete(url, headers: {
@@ -153,7 +139,7 @@ class Cart with ChangeNotifier {
 
   Future<void> modifyQuantity(String id, int quantity, String token) async {
     var url =
-        Uri.parse("https://alofoodie-v2.herokuapp.com/user/modifyQuantity");
+        Uri.parse("https://alofoodie-1.herokuapp.com/user/modifyQuantity");
 
     try {
       await http.post(url, headers: {
@@ -168,11 +154,10 @@ class Cart with ChangeNotifier {
           item.quantity = quantity;
         }
       });
+      notifyListeners();
     } catch (e) {
       print(e);
     }
-
-    notifyListeners();
   }
 
   Future<void> clearCart() async {

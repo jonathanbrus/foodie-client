@@ -3,61 +3,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class Food {
-  final String id;
-  final String name;
-  final String image;
-  final String description;
-  final List addons;
-  final List toppings;
-  final List buns;
-  final List sizes;
-  final int offerPrice;
-  final int fixedPrice;
-  final int packagingCharge;
-  final String category;
-  final bool isActive;
-  final int availableFrom;
-  final int availableTo;
-  final double rating;
-  final bool bestSeller;
-  final String restaurantId;
-
-  Food({
-    required this.id,
-    required this.name,
-    required this.image,
-    required this.description,
-    required this.addons,
-    required this.toppings,
-    required this.buns,
-    required this.sizes,
-    required this.offerPrice,
-    required this.fixedPrice,
-    required this.packagingCharge,
-    required this.category,
-    required this.isActive,
-    required this.availableFrom,
-    required this.availableTo,
-    required this.rating,
-    required this.bestSeller,
-    required this.restaurantId,
-  });
-}
+import '../../models/food.dart';
 
 class Foods with ChangeNotifier {
   List<Food> _foods = [];
   List<Map> _categories = [];
+  bool _veg = false;
   List<String> _selections = [];
   String _search = "";
-  bool _shouldload = true;
-
-  bool get shouldload {
-    return _shouldload;
-  }
 
   List<String> categories(resId) {
-    List<String> categories = [];
+    List<String> categories = ["Offer"];
 
     _categories.forEach((e) {
       if (e["resId"] == resId) {
@@ -68,12 +24,18 @@ class Foods with ChangeNotifier {
     return categories;
   }
 
+  bool get veg {
+    return _veg;
+  }
+
   List<String> get selections {
     return [..._selections];
   }
 
   List<Food> getAllFoods(String resId) {
-    List<Food> foods = [..._foods.where((food) => food.restaurantId == resId)];
+    List<Food> foods = [
+      ..._foods.where((food) => food.restaurantId == resId && food.veg == _veg)
+    ];
 
     if (_search.length > 0 && _selections.length > 0) {
       return [
@@ -108,6 +70,11 @@ class Foods with ChangeNotifier {
     return [...foods];
   }
 
+  void toggleVeg(bool val) {
+    _veg = val;
+    notifyListeners();
+  }
+
   void setSearch(search) {
     _search = search;
 
@@ -129,16 +96,14 @@ class Foods with ChangeNotifier {
   }
 
   Future<void> fetchFoods(resId) async {
-    var prods = _foods.where((e) => e.restaurantId == resId).toList();
-
-    if (prods.isEmpty) {
-      _shouldload = true;
+    if (_foods.where((e) => e.restaurantId == resId).isEmpty) {
       try {
+        print("fetching");
         final url = Uri.parse(
-            "https://alofoodie-v2.herokuapp.com/getFoodItemsByResId?resId=$resId");
+            "https://alofoodie-1.herokuapp.com/allFoodsByRes?resId=$resId");
         final response = await http.get(url);
 
-        List decoded = json.decode(response.body)["allFoods"];
+        List decoded = json.decode(response.body)["foods"];
 
         List categoriesList = [];
 
@@ -152,20 +117,23 @@ class Foods with ChangeNotifier {
               name: food["name"],
               image: food["image"],
               description: food["description"],
-              addons: [],
-              toppings: [],
-              buns: [],
-              sizes: [],
-              offerPrice: food["offerPrice"],
+              category: food["category"],
+              veg: food["veg"],
+              addons: food["addons"].length == 0 ? null : food["addons"],
+              toppings: food["toppings"].length == 0 ? null : food["toppings"],
+              sizes: food["sizes"].length == 0 ? null : food["sizes"],
+              buns: food["buns"].length == 0 ? null : food["buns"],
               fixedPrice: food["fixedPrice"],
+              offerPrice: food["offerPrice"],
               packagingCharge:
                   food["packagingCharge"] == null ? 0 : food["packagingCharge"],
-              category: food["category"],
-              isActive: food["isActive"],
               availableFrom: food["availabilityTiming"]["from"],
               availableTo: food["availabilityTiming"]["to"],
-              rating: food["rating"] + 0.1,
-              bestSeller: true,
+              isActive: food["isActive"],
+              bestSeller:
+                  food["bestSeller"] == null ? false : food["bestSeller"],
+              rating: 4.4,
+              // food["rating"] + 0.1,
               restaurantId: food["restaurantId"],
             );
           })

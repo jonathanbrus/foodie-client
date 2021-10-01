@@ -41,8 +41,8 @@ class RestaurantItem extends StatelessWidget {
         : ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: Colors.red,
-              duration: Duration(milliseconds: 500),
-              content: Text("The Hotel is closed currently."),
+              duration: Duration(milliseconds: 1000),
+              content: Text("The hotel is closed currently."),
               action: SnackBarAction(
                 textColor: Colors.white,
                 label: "Okay",

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:lottie/lottie.dart';
 
 import '../providers/restaurants.dart';
 
-import '../widgets/home_carousal.dart';
-import '../../ui_widgets/restaurant_item.dart';
+import '../../ui_widgets/home_carousal.dart';
+import '../widgets/restaurant_item.dart';
 import '../../widgets/search_field.dart';
 import '../../ui_widgets/loader.dart';
 
@@ -191,7 +192,10 @@ showIfNoSearch(
       mediaQuery.size.height - mediaQuery.viewInsets.horizontal;
 
   final list = [
-    HomeCarousel(screenHeight: screenHeight),
+    HomeCarousel(
+      uri: "foodiehome",
+      screenHeight: screenHeight,
+    ),
     Title(title: "Popular"),
     PopularRestaurants(
       lat: lat,
@@ -233,9 +237,19 @@ restaurantsNearYou(List<Restaurent> allRestaurants) {
               SizedBox(
                 width: 180,
                 height: 180,
-                child: Image.asset("assets/emptyRes.png"),
+                child: Lottie.asset(
+                  "assets/lottie/emptyRes.json",
+                  repeat: true,
+                ),
               ),
-              Text("No Restaurants found around 7 km."),
+              // SizedBox(height: 12),
+              Text(
+                "No resturants found nearby.",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
         ),

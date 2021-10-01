@@ -24,8 +24,6 @@ class Restaurent {
   final String id;
   final String name;
   final String image;
-  final String landmark;
-  final String address;
   final String city;
   final double rating;
   final int offer;
@@ -40,8 +38,6 @@ class Restaurent {
     required this.id,
     required this.name,
     required this.image,
-    required this.landmark,
-    required this.address,
     required this.city,
     required this.rating,
     required this.isActive,
@@ -54,7 +50,7 @@ class Restaurent {
   });
 }
 
-List names = ["KFC", "Dominos", "Dindigul Thalappakatti"];
+List names = ["KFC", "Dominos", "Dindigul Thalappakatti", "Pizza Hut"];
 
 class Restaurants with ChangeNotifier {
   List<Restaurent> _restaurents = [];
@@ -90,7 +86,7 @@ class Restaurants with ChangeNotifier {
 
     return [
       ...[...openedRes, ...closedRes]
-          .where((res) => getDistance(lat, long, res.lat, res.long) <= 5)
+          .where((res) => getDistance(lat, long, res.lat, res.long) <= 6)
           .map((res) {
         res.distance = getDistance(lat, long, res.lat, res.long);
         return res;
@@ -134,26 +130,25 @@ class Restaurants with ChangeNotifier {
   Future<void> fetchAllRestaurents() async {
     if (!loaded) {
       try {
-        final response = await http.get(
-            Uri.parse("https://alofoodie-v2.herokuapp.com/getAllRestaurants"));
+        final response = await http
+            .get(Uri.parse("https://alofoodie-1.herokuapp.com/allRestaurants"));
 
-        List decoded = json.decode(response.body)["allRestaurants"];
+        List decoded = json.decode(response.body)["restaurants"];
 
         _restaurents = decoded.map((res) {
           return Restaurent(
             id: res["_id"],
             name: res["name"],
             image: res["image"],
-            landmark: res["restaurantAddress"]["landmark"],
-            address: res["restaurantAddress"]["address"],
-            city: res["restaurantAddress"]["city"],
-            rating: res["rating"],
+            city: res["restaurantAddress"]["city"] == null
+                ? res["city"]
+                : res["restaurantAddress"]["city"],
+            rating: 4.2,
+            // res["rating"],
             isActive: res["isActive"],
             offer: res["offer"] != null ? res["offer"] : 20,
-            from: 1,
-            // res["timing"]["from"],
-            to: 24,
-            // res["timing"]["to"],
+            from: res["timing"]["from"],
+            to: res["timing"]["to"],
             lat: res["geoPoint"] != null ? res["geoPoint"]["lat"] : 8.083804,
             long: res["geoPoint"] != null ? res["geoPoint"]["long"] : 77.551894,
           );

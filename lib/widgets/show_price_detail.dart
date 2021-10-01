@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PriceDetail extends StatelessWidget {
-  final String from;
+  final bool food;
   final int noOfItems;
   final int itemsAmount;
   final int taxAmount;
@@ -9,7 +9,7 @@ class PriceDetail extends StatelessWidget {
   final int deliveryCharge;
   final int freeDeliveryMargin;
   const PriceDetail(
-      {required this.from,
+      {required this.food,
       required this.noOfItems,
       required this.itemsAmount,
       required this.taxAmount,
@@ -58,9 +58,9 @@ class PriceDetail extends StatelessWidget {
                 ),
                 RowItem(
                   title: "Tax",
-                  result: "5%",
+                  result: "3%",
                 ),
-                if (from != "AloFoodie")
+                if (food)
                   RowItem(
                     title: "Packaging Charge",
                     result:
@@ -122,7 +122,7 @@ class RowItem extends StatelessWidget {
 
 void showPriceDetail({
   required BuildContext context,
-  required String from,
+  required bool food,
   required int noOfItems,
   required int itemsAmount,
   required int taxAmount,
@@ -140,7 +140,7 @@ void showPriceDetail({
         ),
       ),
       builder: (context) => PriceDetail(
-        from: from,
+        food: food,
         noOfItems: noOfItems,
         itemsAmount: itemsAmount,
         taxAmount: taxAmount,

@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../providers/user.dart';
 
-import '../../../ui_widgets/loader.dart';
-
 class AddAddressScreen extends StatefulWidget {
   static const routeName = "/add-address";
   const AddAddressScreen({Key? key}) : super(key: key);
@@ -74,10 +72,30 @@ class AddAddressScreenState extends State<AddAddressScreen> {
             child: Form(
               key: _form,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 6),
+                    child: Text(
+                      "Full Name",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                   TextFormField(
-                    decoration: InputDecoration(labelText: "Full Name"),
+                    decoration: InputDecoration(
+                      hintText: "Eg : John Doe",
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 2,
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
                     textInputAction: TextInputAction.next,
                     onSaved: (value) {
                       _address["fullName"] = value;
@@ -91,8 +109,27 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                       }
                     },
                   ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 6),
+                    child: Text(
+                      "Phone Number",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                   TextFormField(
-                    decoration: InputDecoration(labelText: "Phone Number"),
+                    decoration: InputDecoration(
+                      hintText: "Eg : +91 0987654321",
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 2,
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
                     textInputAction: TextInputAction.next,
                     onSaved: (value) {
                       _address["phone"] = value;
@@ -106,8 +143,27 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                       }
                     },
                   ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 6),
+                    child: Text(
+                      "Pincode",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                   TextFormField(
-                    decoration: InputDecoration(labelText: "Pincode"),
+                    decoration: InputDecoration(
+                      hintText: "Eg : 629-702",
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 2,
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
                     textInputAction: TextInputAction.next,
                     onSaved: (value) {
                       _address["pincode"] = value;
@@ -121,8 +177,27 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                       }
                     },
                   ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 6),
+                    child: Text(
+                      "City",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                   TextFormField(
-                    decoration: InputDecoration(labelText: "City"),
+                    decoration: InputDecoration(
+                      hintText: "Eg : Nagercoil",
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 2,
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
                     textInputAction: TextInputAction.next,
                     onSaved: (value) {
                       _address["city"] = value;
@@ -133,8 +208,27 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                       }
                     },
                   ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 6),
+                    child: Text(
+                      "State",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                   TextFormField(
-                    decoration: InputDecoration(labelText: "State"),
+                    decoration: InputDecoration(
+                      hintText: "Eg : Tamil Nadu",
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 2,
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
                     textInputAction: TextInputAction.next,
                     onSaved: (value) {
                       _address["state"] = value;
@@ -145,8 +239,27 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                       }
                     },
                   ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 6),
+                    child: Text(
+                      "Address",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                   TextFormField(
-                    decoration: InputDecoration(labelText: "Address"),
+                    decoration: InputDecoration(
+                      hintText: "Eg : Home Address",
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 2,
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
                     textInputAction: TextInputAction.next,
                     onSaved: (value) {
                       _address["address"] = value;
@@ -165,14 +278,21 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                         elevation: 0,
                         padding: EdgeInsets.all(10),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero,
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                        primary: Theme.of(context).accentColor,
+                        primary: Colors.black,
                       ),
                       onPressed: () =>
                           _loader ? () => {} : _submitForm(context),
                       child: _loader
-                          ? Loader()
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
                           : Text(
                               "Save Address",
                               style: TextStyle(

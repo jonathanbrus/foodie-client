@@ -1,99 +1,23 @@
+import 'package:alofoodie/foodie/providers/cart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../foodie/providers/cart.dart';
 import '../providers/user.dart';
-// import '../providers/orders.dart';
+import '../providers/cart.dart';
+import '../providers/orders.dart';
 
-import '../widgets/AddressSelection.dart';
-import '../widgets/showPriceDetail.dart';
+import '../models/cart_item.dart';
+import '../models/order.dart';
 
-List restricted = ["KFC", "Domino's", "Dindigul Thalappakatti"];
+import '../screens/order_result.dart';
 
-// void submitForm({
-//   required BuildContext context,
-//   required String id,
-//   required String name,
-//   required bool isFood,
-//   required List orderItems,
-//   required int cartItemsAmount,
-//   required int taxAmount,
-//   required int packagingCharge,
-//   required int deliveryCharge,
-//   required String token,
-//   required String buyFrom,
-//   // required int selectedAddress,
-//   required Function clearCart,
-//   required Function setLoader,
-// }) async {
-//   final addresses = Provider.of<User>(context, listen: false).addresses;
-
-//   if (addresses.length <= 0) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(
-//         backgroundColor: Colors.red,
-//         content: Text("Add address to place orders."),
-//       ),
-//     );
-//   } else if (restricted.contains(buyFrom) &&
-//       (DateTime.now().hour >= 21 || DateTime.now().hour <= 9)) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(
-//         backgroundColor: Colors.red,
-//         content: Text("Cannot deliver orders now."),
-//         action: SnackBarAction(
-//           textColor: Colors.white,
-//           label: "Okay",
-//           onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
-//         ),
-//       ),
-//     );
-//   } else {
-//     setLoader(true);
-//     try {
-//       await Provider.of<Orders>(context, listen: false).placeOrder(
-//         userId: id,
-//         isFood: isFood,
-//         buyFrom: buyFrom,
-//         orderItems: orderItems
-//             .map((e) => OrderItem(
-//                 name: e.name,
-//                 image: e.image,
-//                 price: e.offerPrice,
-//                 quantity: e.quantity))
-//             .toList(),
-//         shippingAddress: {
-//           // "fullName": addresses[selectedAddress].fullName,
-//           // "phone": addresses[selectedAddress].phone,
-//           // "pincode": addresses[selectedAddress].pincode,
-//           // "address": addresses[selectedAddress].address,
-//           // "city": addresses[selectedAddress].city,
-//           // "state": addresses[selectedAddress].state,
-//         },
-//         paymentMethod: "COD",
-//         taxAmount: taxAmount.toInt(),
-//         deliveryCharge: deliveryCharge,
-//         totalAmount:
-//             cartItemsAmount + taxAmount + deliveryCharge + packagingCharge,
-//         token: token,
-//       );
-//       clearCart();
-//       Navigator.of(context).pushReplacement(
-//         MaterialPageRoute(
-//           builder: (_) => OrderResultScreen(),
-//         ),
-//       );
-//       setLoader(false);
-//     } catch (e) {
-//       print(e);
-//       setLoader(false);
-//     }
-//   }
-// }
+import '../widgets/select_address.dart';
+import '../widgets/show_price_detail.dart';
 
 class BottomContainer extends StatefulWidget {
   final List cartItems;
-  final String buyFrom;
-  final bool isFood;
+  final bool food;
   final int cartItemsAmount;
   final int taxAmount;
   final int packagingCharge;
@@ -103,8 +27,7 @@ class BottomContainer extends StatefulWidget {
 
   BottomContainer({
     required this.cartItems,
-    required this.buyFrom,
-    required this.isFood,
+    required this.food,
     required this.cartItemsAmount,
     required this.taxAmount,
     required this.packagingCharge,
@@ -119,8 +42,6 @@ class BottomContainer extends StatefulWidget {
 }
 
 class _BottomContainerState extends State<BottomContainer> {
-  int? _index = 0;
-
   @override
   Widget build(BuildContext context) {
     int totalAmount = widget.cartItemsAmount +
@@ -164,7 +85,7 @@ class _BottomContainerState extends State<BottomContainer> {
                     GestureDetector(
                       onTap: () => showPriceDetail(
                         context: context,
-                        from: widget.buyFrom,
+                        food: widget.food,
                         freeDeliveryMargin: widget.freeDeliveryMargin,
                         deliveryCharge: widget.deliveryCharge,
                         itemsAmount: widget.cartItemsAmount,
@@ -194,7 +115,9 @@ class _BottomContainerState extends State<BottomContainer> {
                     borderRadius: BorderRadius.circular(25),
                   ),
                 ),
-                onPressed: () => showAddressSelection(context, _index),
+                onPressed: widget.cartItems.length == 0
+                    ? null
+                    : () => showSelectAddress(context, widget.food),
                 child: Row(
                   children: [
                     Text(
@@ -275,9 +198,10 @@ class CashLessPayNotice extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 10),
       alignment: Alignment.center,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "Now you can make cashless payments with Gpay, Phonepe and other cards when receiving your order.",
+            "Now you can make cashless payments with Gpay, Phonepe and other cards on your doorstep.",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 15),
           ),
@@ -289,5 +213,89 @@ class CashLessPayNotice extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+void placeOrder({
+  required BuildContext context,
+  required bool food,
+  required int addressIndex,
+  required Function setLoader,
+}) async {
+  final user = Provider.of<User>(context, listen: false);
+  final cart = Provider.of<Cart>(context, listen: false);
+  final foodieCart = Provider.of<FoodieCart>(context, listen: false);
+
+  final buyFrom = food ? foodieCart.restaurantName : "AloFoodie";
+  final address = user.addresses[addressIndex];
+  final List<CartItem> orderItems =
+      food ? foodieCart.cartItems : cart.getAllProducts;
+  final Function clearCart = food ? foodieCart.clearCart : cart.clearCart;
+  final packingCharge = food ? foodieCart.packagingCharge : 0;
+  final deliveryCharge = food ? foodieCart.deliveryCharge : cart.deliveryCharge;
+  final taxAmount = food ? foodieCart.taxAmount : cart.taxAmount;
+  final cartItemsAmount =
+      food ? foodieCart.totalItemsAmount : cart.totalItemsAmount;
+
+  if (cartItemsAmount <= 199 && !food) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.red,
+        duration: Duration(milliseconds: 1000),
+        content: Text("Order value must be minimum  \u{20B9}199."),
+        action: SnackBarAction(
+          textColor: Colors.white,
+          label: "Okay",
+          onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+        ),
+      ),
+    );
+
+    return;
+  }
+
+  setLoader();
+  try {
+    await Provider.of<Orders>(context, listen: false).placeOrder(
+      food: food,
+      buyFrom: buyFrom,
+      orderItems: orderItems
+          .map((item) => OrderItem(
+                name: item.name,
+                image: item.image,
+                price: item.offerPrice,
+                quantity: item.quantity,
+                addon: item.addon,
+                topping: item.topping,
+                bun: item.bun,
+                size: item.size,
+              ))
+          .toList(),
+      shippingAddress: {
+        "fullName": address.fullName,
+        "phone": address.phone,
+        "pincode": address.pincode,
+        "address": address.address,
+        "city": address.city,
+        "state": address.state,
+      },
+      paymentMethod: "COD",
+      taxAmount: taxAmount.toInt(),
+      deliveryCharge: deliveryCharge,
+      packingCharge: packingCharge,
+      totalAmount: cartItemsAmount + taxAmount + deliveryCharge + packingCharge,
+      token: user.authToken,
+    );
+    clearCart();
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => OrderResultScreen(),
+      ),
+    );
+    setLoader();
+  } catch (e) {
+    print(e);
+    setLoader(false);
   }
 }

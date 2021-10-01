@@ -13,7 +13,7 @@ class ProfileTop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 320,
+      height: 300,
       padding: EdgeInsets.all(20),
       color: Colors.white,
       child: Column(

@@ -15,6 +15,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _form = GlobalKey<FormState>();
+  bool _toggle = false;
 
   bool _loader = false;
 
@@ -94,6 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
                 width: double.infinity,
@@ -151,10 +153,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: "Password"),
+                decoration: InputDecoration(
+                  labelText: "Password",
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _toggle = !_toggle;
+                      });
+                    },
+                    child: Icon(
+                      _toggle
+                          ? Icons.visibility_rounded
+                          : Icons.visibility_off_rounded,
+                      size: 26,
+                    ),
+                  ),
+                ),
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.visiblePassword,
-                obscureText: true,
+                obscureText: !_toggle,
                 onSaved: (value) {
                   _newUser["password"] = value;
                 },

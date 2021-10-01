@@ -16,6 +16,8 @@ class CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -47,7 +49,10 @@ class CategoryItem extends StatelessWidget {
               child: Text(
                 title,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontSize: width * 0.036,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             Spacer(),
@@ -56,8 +61,8 @@ class CategoryItem extends StatelessWidget {
               alignment: Alignment.bottomRight,
               margin: EdgeInsets.only(right: 6, bottom: 8),
               child: Container(
-                width: 68,
-                height: 68,
+                width: width * 0.16,
+                height: width * 0.16,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(img),

@@ -30,9 +30,10 @@ class _CartListItemState extends State<CartListItem> {
   @override
   Widget build(BuildContext context) {
     final token = Provider.of<User>(context).authToken;
-    return Container(
-      margin: EdgeInsets.only(top: 5),
-      color: Colors.white,
+    return Card(
+      elevation: 4,
+      margin: EdgeInsets.only(left: 8, bottom: 8, right: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(
         children: [
           Container(
@@ -50,23 +51,30 @@ class _CartListItemState extends State<CartListItem> {
                       widget.name.length > 28
                           ? widget.name.substring(0, 25) + "..."
                           : widget.name,
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                     Divider(height: 6),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          "\u20B9${widget.offerPrice}",
-                          style: TextStyle(fontSize: 22),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "\u20B9${widget.fixedPrice}",
+                          "${widget.fixedPrice}",
                           style: TextStyle(
+                            fontWeight: FontWeight.bold,
                             fontSize: 16,
                             decoration: TextDecoration.lineThrough,
                             color: Colors.black54,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "\u20B9${widget.offerPrice}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
                         ),
                       ],
@@ -82,7 +90,10 @@ class _CartListItemState extends State<CartListItem> {
                     Container(
                       child: Row(
                         children: [
-                          Text("Quantity :"),
+                          Text(
+                            "Quantity :",
+                            style: TextStyle(fontSize: 16),
+                          ),
                           SizedBox(width: 5),
                           Consumer<Cart>(
                             builder: (ctx, cartProvider, ch) => DropdownButton(
@@ -94,7 +105,10 @@ class _CartListItemState extends State<CartListItem> {
                               value: widget.qunatity,
                               onChanged: (int? val) {
                                 cartProvider.modifyQuantity(
-                                    widget.id, val!, token);
+                                  widget.id,
+                                  val!,
+                                  token,
+                                );
                               },
                               items: [1, 2, 3, 4, 5]
                                   .map(
@@ -134,13 +148,15 @@ class _CartListItemState extends State<CartListItem> {
                       size: 20,
                     ),
                     label: Text(
-                      "Add to Wishlist",
+                      "Move to Wishlist",
                       style: TextStyle(fontSize: 14),
                     ),
                     style: TextButton.styleFrom(
                       primary: Colors.black87,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(12),
+                        ),
                       ),
                       padding: EdgeInsets.symmetric(vertical: 12),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -154,7 +170,7 @@ class _CartListItemState extends State<CartListItem> {
                       onPressed: () =>
                           cartProvider.removeFromCart(widget.id, token),
                       icon: Icon(
-                        Icons.delete_rounded,
+                        Icons.delete_forever_outlined,
                         size: 20,
                       ),
                       label: Text(
@@ -164,7 +180,9 @@ class _CartListItemState extends State<CartListItem> {
                       style: TextButton.styleFrom(
                         primary: Colors.black87,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero,
+                          borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(12),
+                          ),
                         ),
                         padding: EdgeInsets.symmetric(vertical: 12),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
