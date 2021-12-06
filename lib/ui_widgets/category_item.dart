@@ -37,8 +37,10 @@ class CategoryItem extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        onTap: () => Navigator.of(context)
-            .pushNamed(routeName, arguments: [title, category]),
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed(routeName, arguments: [title, category]);
+        },
         borderRadius: BorderRadius.circular(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

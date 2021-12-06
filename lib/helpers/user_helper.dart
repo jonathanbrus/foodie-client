@@ -5,21 +5,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/address.dart';
 
 Future<Map<String, dynamic>> setData({
-  required user,
+  required data,
   required password,
-  required authToken,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.clear();
   prefs.reload();
 
-  final String name = user["name"];
-  final String email = user["email"];
-  final String phone = user["phone"];
-  final bool primeMember = user["primeMember"];
+  final String name = data["name"];
+  final String email = data["email"];
+  final String phone = data["phone"];
+  final bool primeMember = data["primeMember"];
 
   List<Address> addresses = [
-    ...user["addresses"].map(
+    ...data["addresses"].map(
       (address) => Address(
         fullName: address["fullName"],
         phone: address["phone"],
@@ -37,7 +36,7 @@ Future<Map<String, dynamic>> setData({
   await prefs.setBool("primeMember", primeMember);
   await prefs.setString("password", password);
   await prefs.setString("addresses", json.encode(addresses));
-  await prefs.setString("authToken", authToken);
+  await prefs.setString("authToken", data["authToken"]);
 
   return {
     "name": name,
@@ -45,7 +44,7 @@ Future<Map<String, dynamic>> setData({
     "phone": phone,
     "primeMember": primeMember,
     "addresses": addresses,
-    "authToken": authToken
+    "authToken": data["authToken"]
   };
 }
 

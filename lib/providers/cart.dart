@@ -28,7 +28,7 @@ class Cart with ChangeNotifier {
   }
 
   int get deliveryCharge {
-    return _cart.isEmpty ? 0 : 30;
+    return _cart.isEmpty || totalItemsAmount > 499 ? 0 : 30;
   }
 
   List<CartItem> get getAllProducts {
@@ -36,7 +36,7 @@ class Cart with ChangeNotifier {
   }
 
   Future<void> myCart(String token) async {
-    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/myCart");
+    var url = Uri.parse("https://alofoodie.herokuapp.com/user/myCart");
 
     if (_intialLoad) {
       try {
@@ -46,7 +46,7 @@ class Cart with ChangeNotifier {
 
         final decoded = json.decode(response.body);
 
-        _cart = decoded["myCartItems"]
+        _cart = decoded["data"]
             .map(
               (item) => CartItem(
                 id: item["id"],
@@ -98,7 +98,7 @@ class Cart with ChangeNotifier {
       quantity: 1,
     );
 
-    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/addToCart");
+    var url = Uri.parse("https://alofoodie.herokuapp.com/user/addToCart");
 
     try {
       if (_cart.where((element) => element.id == id).isEmpty) {
@@ -119,8 +119,7 @@ class Cart with ChangeNotifier {
   }
 
   Future<void> removeFromCart(String id, String token) async {
-    var url =
-        Uri.parse("https://alofoodie-1.herokuapp.com/user/removeFromCart");
+    var url = Uri.parse("https://alofoodie.herokuapp.com/user/removeFromCart");
 
     try {
       await http.delete(url, headers: {
@@ -138,8 +137,7 @@ class Cart with ChangeNotifier {
   }
 
   Future<void> modifyQuantity(String id, int quantity, String token) async {
-    var url =
-        Uri.parse("https://alofoodie-1.herokuapp.com/user/modifyQuantity");
+    var url = Uri.parse("https://alofoodie.herokuapp.com/user/modifyQuantity");
 
     try {
       await http.post(url, headers: {

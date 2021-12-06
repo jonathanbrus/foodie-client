@@ -39,7 +39,7 @@ class _OrderDetailScreenState extends State<OrderDetailsScreen> {
         steps = packedSteps;
         break;
 
-      case "delivery":
+      case "out for delivery":
         steps = deliverySteps;
         break;
 
@@ -207,13 +207,23 @@ class _OrderDetailScreenState extends State<OrderDetailsScreen> {
                   ),
                   SizedBox(height: 6),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("Address"),
-                      Text(
-                        order.shippingAddress["address"],
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold),
+                      Spacer(),
+                      Flexible(
+                        child: Container(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            order.shippingAddress["address"],
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       )
                     ],
                   ),
@@ -284,7 +294,7 @@ class _OrderDetailScreenState extends State<OrderDetailsScreen> {
                       Text("Payment status"),
                       Text(
                         order.orderStatus == "Canceled"
-                            ? "Canceled"
+                            ? "Cancelled"
                             : order.paid
                                 ? "Paid"
                                 : "Payment Pending",

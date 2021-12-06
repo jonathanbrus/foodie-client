@@ -18,7 +18,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchAllOrders(String token, bool refresh) async {
-    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/myOrders");
+    var url = Uri.parse("https://alofoodie.herokuapp.com/user/myOrders");
 
     if ((_initialFetch && !_noOrdersYet) || refresh) {
       try {
@@ -29,10 +29,10 @@ class Orders with ChangeNotifier {
         final decoded = json.decode(response.body);
 
         _orders = [
-          ...(decoded["myOrders"] as List<dynamic>).map((order) {
+          ...(decoded["data"] as List<dynamic>).map((order) {
             return Order(
               id: order["_id"],
-              food: order["food"] == null ? order["isFood"] : order["food"],
+              food: order["food"] == null ? true : order["food"],
               orderItems: (order["orderItems"] as List<dynamic>)
                   .map(
                     (item) => OrderItem(
@@ -67,7 +67,7 @@ class Orders with ChangeNotifier {
           }).toList()
         ];
         _initialFetch = false;
-        _noOrdersYet = decoded["myOrders"].isEmpty;
+        _noOrdersYet = decoded["data"].isEmpty;
 
         notifyListeners();
       } catch (e) {
@@ -87,7 +87,7 @@ class Orders with ChangeNotifier {
       required int packingCharge,
       required int totalAmount,
       required String token}) async {
-    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/placeOrder");
+    var url = Uri.parse("https://alofoodie.herokuapp.com/user/placeOrder");
 
     try {
       final response = await http.post(url, headers: {
@@ -109,18 +109,18 @@ class Orders with ChangeNotifier {
       _orders.insert(
         0,
         Order(
-          id: decodedNewOrder["newOrder"]["_id"],
+          id: decodedNewOrder["data"]["_id"],
           food: food,
-          buyFrom: decodedNewOrder["newOrder"]["buyFrom"],
+          buyFrom: decodedNewOrder["data"]["buyFrom"],
           orderItems: orderItems,
           shippingAddress: shippingAddress,
           paymentMethod: paymentMethod,
           taxAmount: taxAmount,
           deliveryCharge: deliveryCharge,
           totalAmount: totalAmount,
-          paid: decodedNewOrder["newOrder"]["paid"],
-          orderStatus: decodedNewOrder["newOrder"]["orderStatus"],
-          createdAt: DateTime.parse(decodedNewOrder["newOrder"]["createdAt"]),
+          paid: decodedNewOrder["data"]["paid"],
+          orderStatus: decodedNewOrder["data"]["orderStatus"],
+          createdAt: DateTime.parse(decodedNewOrder["data"]["createdAt"]),
         ),
       );
     } catch (e) {
@@ -129,7 +129,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> cancelOrder(String orderId, String token) async {
-    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/cancelOrder");
+    var url = Uri.parse("https://alofoodie.herokuapp.com/user/cancelOrder");
 
     try {
       await http.delete(url,

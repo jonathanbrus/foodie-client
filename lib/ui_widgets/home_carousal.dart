@@ -25,7 +25,7 @@ class _HomeCarouselState extends State<HomeCarousel> {
 
   fetchSlider() async {
     var url = Uri.parse(
-        "https://alofoodie-1.herokuapp.com/fetchImages?imageFor=${widget.uri}");
+        "https://alofoodie.herokuapp.com/images?imageFor=${widget.uri}");
     try {
       final response = await http.get(url);
 
@@ -33,7 +33,7 @@ class _HomeCarouselState extends State<HomeCarousel> {
 
       if (mounted) {
         setState(() {
-          _slides = [..._slides, ...decoded["images"]];
+          _slides = [..._slides, ...decoded["data"]];
         });
       }
     } catch (e) {

@@ -3,11 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:lottie/lottie.dart';
 
 import '../providers/restaurants.dart';
+import '../../helpers/location.dart';
+import '../providers/foods.dart';
 
 import '../../ui_widgets/home_carousal.dart';
 import '../widgets/restaurant_item.dart';
 import '../../widgets/search_field.dart';
 import '../../ui_widgets/loader.dart';
+import "../../models/restaurant.dart";
 
 class FoodieHome extends StatefulWidget {
   static const routeName = "foodie-home";
@@ -19,20 +22,14 @@ class FoodieHome extends StatefulWidget {
 }
 
 class _FoodieHomeState extends State<FoodieHome> {
-  late String _search = "";
-
-  void setSearch(search) {
-    setState(() {
-      _search = search;
-    });
+  @override
+  void didChangeDependencies() {
+    Provider.of<Restaurants>(context, listen: false).clearSearch();
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    final restaurantsProvider = Provider.of<Restaurants>(context);
-
-    restaurantsProvider.fetchAllRestaurents();
-
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
@@ -41,75 +38,70 @@ class _FoodieHomeState extends State<FoodieHome> {
         ),
         title: Text("Food & Drinks"),
         bottom: PreferredSize(
-          child: SearchField(
-            hint: "Search",
-            setSearch: setSearch,
-          ),
+          child: Consumer<Restaurants>(builder: (context, res, ch) {
+            return SearchField(
+              hint: "Search",
+              setSearch: res.setSearch,
+            );
+          }),
           preferredSize: Size(double.infinity, 70),
         ),
       ),
       body: SafeArea(
         child: FutureBuilder(
-          future: restaurantsProvider.getLocation(),
+          future: getLocation(),
           builder: (BuildContext ctx, location) {
-            if (location.connectionState == ConnectionState.done) {
-              Map<String, dynamic> data = location.data as Map<String, dynamic>;
-
-              if (data["hasPermission"]) {
-                if (restaurantsProvider.getAllRestaurents.length > 0) {
-                  return RefreshIndicator(
-                    color: Theme.of(context).primaryColor,
-                    strokeWidth: 2.6,
-                    triggerMode: RefreshIndicatorTriggerMode.anywhere,
-                    onRefresh: () {
-                      restaurantsProvider.setLoaded();
-                      return restaurantsProvider.fetchAllRestaurents();
-                    },
-                    child: ListView(
-                      physics: BouncingScrollPhysics(),
-                      padding: EdgeInsets.only(bottom: 12),
-                      children: [
-                        if (_search.length == 0)
-                          ...showIfNoSearch(
-                            lat: data["lat"],
-                            long: data["long"],
-                            context: context,
-                          ),
-                        ...restaurantsNearYou(
-                          _search.length > 0
-                              ? restaurantsProvider
-                                  .nearByRestaurants(
-                                    data["lat"],
-                                    data["long"],
-                                  )
-                                  .where(
-                                    (res) => res.name.toLowerCase().contains(
-                                          _search.toLowerCase(),
-                                        ),
-                                  )
-                                  .toList()
-                              : restaurantsProvider.nearByRestaurants(
-                                  data["lat"],
-                                  data["long"],
-                                ),
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return Center(
-                    child: Loader(),
-                  );
+            switch (location.connectionState) {
+              case ConnectionState.done:
+                Map<String, dynamic> data =
+                    location.data as Map<String, dynamic>;
+                if (!data["hasPermission"]) {
+                  return Center(child: Text("Enable Location"));
                 }
-              } else {
-                return Center(
-                  child: Text("Enable Location"),
-                );
-              }
-            } else {
-              return Center(
-                child: Loader(),
-              );
+                return Consumer<Restaurants>(
+                    builder: (context, restaurantsProvider, ch) {
+                  return FutureBuilder(
+                    future: restaurantsProvider.fetchAllRestaurents(
+                      data["lat"],
+                      data["long"],
+                    ),
+                    builder: (BuildContext ctx, snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.done:
+                          return RefreshIndicator(
+                            color: Theme.of(context).primaryColor,
+                            strokeWidth: 2.6,
+                            triggerMode: RefreshIndicatorTriggerMode.anywhere,
+                            onRefresh: () {
+                              Provider.of<Foods>(context, listen: false)
+                                  .setempty();
+                              restaurantsProvider.setLoaded();
+                              return restaurantsProvider.fetchAllRestaurents(
+                                data["lat"],
+                                data["long"],
+                              );
+                            },
+                            child: ListView(
+                              physics: BouncingScrollPhysics(),
+                              padding: EdgeInsets.only(bottom: 12),
+                              children: [
+                                if (restaurantsProvider.search.length == 0)
+                                  SearchInActive(),
+                                SearchActive(
+                                  allRestaurants:
+                                      restaurantsProvider.nearByRestaurants,
+                                ),
+                              ],
+                            ),
+                          );
+                        default:
+                          return Center(child: Loader());
+                      }
+                    },
+                  );
+                });
+              default:
+                return Center(child: Loader());
             }
           },
         ),
@@ -141,11 +133,7 @@ class Title extends StatelessWidget {
 }
 
 class PopularRestaurants extends StatelessWidget {
-  final double lat;
-  final double long;
-
-  const PopularRestaurants({required this.lat, required this.long, Key? key})
-      : super(key: key);
+  const PopularRestaurants({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -157,79 +145,66 @@ class PopularRestaurants extends StatelessWidget {
           physics: BouncingScrollPhysics(),
           scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext ctx, int i) {
-            final res = restaurants.popularRestaurants(lat, long)[i];
+            final res = restaurants.popularRestaurents[i];
 
             return RestaurantItem(
               id: res.id,
               name: res.name,
               image: res.image,
               city: res.city,
-              isActive: res.isActive,
+              isActive: res.active,
               offer: res.offer,
               from: res.from,
               to: res.to,
               rating: res.rating,
-              distance: res.distance!,
-              margin: i + 1 != restaurants.popularRestaurants(lat, long).length
-                  ? 0
-                  : 12,
+              distance: res.distance,
+              margin: i + 1 != restaurants.popularRestaurents.length ? 0 : 12,
               bottomMargin: 12,
             );
           },
-          itemCount: restaurants.popularRestaurants(lat, long).length,
+          itemCount: restaurants.popularRestaurents.length,
         ),
       ),
     );
   }
 }
 
-showIfNoSearch(
-    {required double lat,
-    required double long,
-    required BuildContext context}) {
-  final mediaQuery = MediaQuery.of(context);
-  final screenHeight =
-      mediaQuery.size.height - mediaQuery.viewInsets.horizontal;
+class SearchInActive extends StatelessWidget {
+  SearchInActive({Key? key}) : super(key: key);
 
-  final list = [
-    HomeCarousel(
-      uri: "foodiehome",
-      screenHeight: screenHeight,
-    ),
-    Title(title: "Popular"),
-    PopularRestaurants(
-      lat: lat,
-      long: long,
-    ),
-    Title(
-      title: "Restaurants Nearby",
-    ),
-  ];
-
-  return list.map((e) => e);
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenHeight =
+        mediaQuery.size.height - mediaQuery.viewInsets.horizontal;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HomeCarousel(
+          uri: "foodiehome",
+          screenHeight: screenHeight,
+        ),
+        Title(title: "Popular"),
+        PopularRestaurants(),
+        Title(
+          title: "Restaurants Nearby",
+        ),
+      ],
+    );
+  }
 }
 
-restaurantsNearYou(List<Restaurent> allRestaurants) {
-  if (allRestaurants.length > 0) {
-    return allRestaurants.map(
-      (res) => RestaurantItem(
-        id: res.id,
-        name: res.name,
-        image: res.image,
-        city: res.city,
-        isActive: res.isActive,
-        offer: res.offer,
-        from: res.from,
-        to: res.to,
-        rating: res.rating,
-        distance: res.distance!,
-        margin: 12,
-        bottomMargin: 0,
-      ),
-    );
-  } else {
-    final list = [
-      Container(
+class SearchActive extends StatelessWidget {
+  final List<Restaurent> allRestaurants;
+  SearchActive({required this.allRestaurants, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final restaurants = Provider.of<Restaurants>(context).nearByRestaurants;
+
+    if (restaurants.isEmpty) {
+      return Container(
         padding: EdgeInsets.symmetric(vertical: 40),
         child: Center(
           child: Column(
@@ -242,9 +217,8 @@ restaurantsNearYou(List<Restaurent> allRestaurants) {
                   repeat: true,
                 ),
               ),
-              // SizedBox(height: 12),
               Text(
-                "No resturants found nearby.",
+                "No restaurants found nearby.",
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -253,8 +227,29 @@ restaurantsNearYou(List<Restaurent> allRestaurants) {
             ],
           ),
         ),
-      ),
-    ];
-    return list.map((e) => e);
+      );
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: allRestaurants
+            .map(
+              (res) => RestaurantItem(
+                id: res.id,
+                name: res.name,
+                image: res.image,
+                city: res.city,
+                isActive: res.active,
+                offer: res.offer,
+                from: res.from,
+                to: res.to,
+                rating: res.rating,
+                distance: res.distance,
+                margin: 12,
+                bottomMargin: 0,
+              ),
+            )
+            .toList(),
+      );
+    }
   }
 }

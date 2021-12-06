@@ -109,10 +109,10 @@ class Products with ChangeNotifier {
       _shouldload = true;
       try {
         final url = Uri.parse(
-            "https://alofoodie-1.herokuapp.com/allProductsByCategory?category=$category");
+            "https://alofoodie.herokuapp.com/products?category=$category");
         final response = await http.get(url);
 
-        List decoded = json.decode(response.body)["products"];
+        List decoded = json.decode(response.body)["data"];
 
         List categoriesList = [];
 

@@ -173,8 +173,8 @@ List<Step> canceledSteps = [
     state: StepState.complete,
   ),
   const Step(
-    title: Text("Order canceled"),
-    content: Text("Your order is canceled."),
+    title: Text("Order cancelled"),
+    content: Text("Your order is cancelled."),
     isActive: true,
     state: StepState.error,
   ),

@@ -45,7 +45,7 @@ class FoodieCart with ChangeNotifier {
   }
 
   int get deliveryCharge {
-    return _deliveryCharge;
+    return totalItemsAmount > 999 ? 0 : _deliveryCharge;
   }
 
   int get itemsCount {
@@ -132,7 +132,7 @@ class FoodieCart with ChangeNotifier {
 
     if (_cart.containsKey(id)) {
       _cart.forEach((key, value) {
-        if (key == id && value.quantity < 9) {
+        if (key == id && value.quantity < 99) {
           value.quantity++;
         }
       });

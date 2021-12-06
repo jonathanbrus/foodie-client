@@ -56,6 +56,7 @@ class DeliveryDetail extends StatelessWidget {
             ),
             SizedBox(height: 4),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "Address",
@@ -64,9 +65,15 @@ class DeliveryDetail extends StatelessWidget {
                   ),
                 ),
                 Spacer(),
-                Text(
-                  address.address,
-                  style: TextStyle(fontSize: 15),
+                Flexible(
+                  child: Container(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      address.address,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(fontSize: 15),
+                    ),
+                  ),
                 ),
               ],
             ),

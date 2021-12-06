@@ -55,7 +55,7 @@ class _OrderListItemState extends State<OrderListItem> {
                 children: [
                   Text("Order Status", style: TextStyle(fontSize: 14)),
                   Text(
-                    "${widget.order.orderStatus}",
+                    "${widget.order.orderStatus == "Canceled" ? "Cancelled" : widget.order.orderStatus}",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),

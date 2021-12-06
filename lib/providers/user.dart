@@ -52,7 +52,7 @@ class User with ChangeNotifier {
     required String phone,
     required String password,
   }) async {
-    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/sign-up");
+    var url = Uri.parse("https://alofoodie.herokuapp.com/user/sign-up");
 
     try {
       final response = await http.post(url, body: {
@@ -64,13 +64,12 @@ class User with ChangeNotifier {
 
       final decoded = json.decode(response.body);
 
-      if (decoded["statusCode"] != 201) {
+      if (decoded["status"] != 201) {
         throw Failure(decoded["message"]);
       }
 
       final Map<String, dynamic> data = await setData(
-        user: decoded["user"],
-        authToken: decoded["authToken"],
+        data: decoded["data"],
         password: password,
       );
 
@@ -89,7 +88,7 @@ class User with ChangeNotifier {
   }
 
   Future<void> signIn({required email, required password}) async {
-    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/sign-in");
+    var url = Uri.parse("https://alofoodie.herokuapp.com/user/sign-in");
     try {
       final response = await http.post(url, body: {
         "email": email,
@@ -98,13 +97,12 @@ class User with ChangeNotifier {
 
       final decoded = json.decode(response.body);
 
-      if (decoded["statusCode"] != 200) {
+      if (decoded["status"] != 200) {
         throw Failure(decoded["message"]);
       }
 
       final Map<String, dynamic> data = await setData(
-        user: decoded["user"],
-        authToken: decoded["authToken"],
+        data: decoded["data"],
         password: password,
       );
 
@@ -155,7 +153,7 @@ class User with ChangeNotifier {
     required city,
     required state,
   }) async {
-    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/addAddress");
+    var url = Uri.parse("https://alofoodie.herokuapp.com/user/addAddress");
     try {
       final response = await http.post(url, body: {
         "fullName": fullName,
@@ -170,7 +168,7 @@ class User with ChangeNotifier {
 
       final decoded = json.decode(response.body);
 
-      _addresses = await updateAddress(rawAddresses: decoded["addresses"]);
+      _addresses = await updateAddress(rawAddresses: decoded["data"]);
       notifyListeners();
     } catch (e) {
       print(e);
@@ -178,7 +176,7 @@ class User with ChangeNotifier {
   }
 
   Future<void> deleteAddress(int index) async {
-    var url = Uri.parse("https://alofoodie-1.herokuapp.com/user/deleteAddress");
+    var url = Uri.parse("https://alofoodie.herokuapp.com/user/deleteAddress");
 
     try {
       final response = await http.post(url, body: {
@@ -198,7 +196,7 @@ class User with ChangeNotifier {
 }
 
 Future<void> updateProfile() async {
-  var url = Uri.parse("https://alofoodie-1.herokuapp.com/updateProfile");
+  var url = Uri.parse("https://alofoodie.herokuapp.com/updateProfile");
   try {
     final response = await http.post(url, body: {
       "name": "",
@@ -213,7 +211,7 @@ Future<void> updateProfile() async {
 
 Future<void> changePassword(
     {required String userId, required String password}) async {
-  var url = Uri.parse("https://alofoodie-1.herokuapp.com/change-password");
+  var url = Uri.parse("https://alofoodie.herokuapp.com/change-password");
 
   try {
     final response = await http.post(url, body: {

@@ -95,21 +95,31 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           fixedPriceSize: 18,
                           offerPriceSize: 20,
                           offerPercentSize: 14),
-                      SizedBox(height: 4),
-                      Container(
-                        child: Text(
-                          "Delivery charge \u{20B9}${widget.product.deliveryCharge} | Free delivery for Prime members",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      // SizedBox(height: 4),
+                      // Container(
+                      //   child: Text(
+                      //     "Delivery charge \u{20B9}${widget.product.deliveryCharge} | Free delivery for Prime members",
+                      //     style: TextStyle(
+                      //       fontSize: 16,
+                      //       fontWeight: FontWeight.w600,
+                      //     ),
+                      //   ),
+                      // ),
+                      SizedBox(height: 6),
+                      Text(
+                        "Free delivery for orders above Rs.499",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       SizedBox(height: 6),
                       Container(
                         child: widget.product.itemsInStock < 10
                             ? Text(
-                                "Only ${widget.product.itemsInStock} available in stock",
+                                widget.product.itemsInStock == 0
+                                    ? "This item is out of stock"
+                                    : "Only ${widget.product.itemsInStock} available in stock",
                                 style: TextStyle(
                                   color: Colors.red,
                                   fontSize: 16,
@@ -175,7 +185,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    if (!_loading)
+                    if (widget.product.itemsInStock == 0) {
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Out of stock!")));
+                    } else if (!_loading)
                       cartProvider.getAllProducts
                               .where((e) => e.id == widget.product.id)
                               .isEmpty

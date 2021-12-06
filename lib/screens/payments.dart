@@ -243,7 +243,7 @@ class PriceDetails extends StatelessWidget {
           ),
           RowItem(
             title: "Tax",
-            result: "3%",
+            result: "5%",
           ),
           if (food)
             RowItem(
@@ -291,6 +291,7 @@ class RowItem extends StatelessWidget {
           ),
           Text(
             result,
+            maxLines: 3,
             style: TextStyle(fontSize: 16),
           )
         ],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // providers
-import 'providers/user.dart';
+import './providers/user.dart';
 import './foodie/providers/restaurants.dart';
 import './foodie/providers/foods.dart';
 import './foodie/providers/cart.dart';

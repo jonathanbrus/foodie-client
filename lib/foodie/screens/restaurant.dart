@@ -43,20 +43,17 @@ class _RestaurantState extends State<Restaurant> {
       restaurantName: widget.name,
       deliveryCharge: deliveryCharge,
     );
+
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    final foodsProvider = Provider.of<Foods>(context);
-
-    final allFood = foodsProvider.getAllFoods(widget.id);
-
     return WillPopScope(
       onWillPop: () => showdialogue(context),
       child: Scaffold(
         body: FutureBuilder(
-            future: foodsProvider.fetchFoods(widget.id),
+            future: Provider.of<Foods>(context).fetchFoods(widget.id),
             builder: (context, snapshot) {
               return CustomScrollView(
                 slivers: [
@@ -66,10 +63,24 @@ class _RestaurantState extends State<Restaurant> {
                     loaded: snapshot.connectionState == ConnectionState.done,
                   ),
                   SliverList(
-                      delegate: SliverChildListDelegate([SizedBox(height: 8)])),
-                  SliverList(
-                    delegate: snapshot.connectionState == ConnectionState.done
-                        ? allFood.isNotEmpty
+                    delegate: SliverChildListDelegate([SizedBox(height: 8)]),
+                  ),
+                  if (snapshot.connectionState == ConnectionState.waiting)
+                    SliverList(
+                      delegate: SliverChildListDelegate(
+                        [
+                          Container(
+                            height: MediaQuery.of(context).size.height - 206,
+                            child: Loader(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (snapshot.connectionState == ConnectionState.done)
+                    Consumer<Foods>(builder: (context, foods, ch) {
+                      final allFood = foods.getAllFoods(widget.id);
+                      return SliverList(
+                        delegate: allFood.isNotEmpty
                             ? SliverChildBuilderDelegate(
                                 (BuildContext ctx, int i) {
                                   return Container(
@@ -97,17 +108,9 @@ class _RestaurantState extends State<Restaurant> {
                                     ),
                                   ),
                                 ],
-                              )
-                        : SliverChildListDelegate(
-                            [
-                              Container(
-                                height:
-                                    MediaQuery.of(context).size.height - 206,
-                                child: Loader(),
                               ),
-                            ],
-                          ),
-                  ),
+                      );
+                    }),
                 ],
               );
             }),
@@ -131,43 +134,47 @@ class _RestaurantState extends State<Restaurant> {
 }
 
 Future<bool> showdialogue(context) async {
-  final value = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          content:
-              Text("Your cart will be cleared, Are you sure you want to exit?"),
-          actions: <Widget>[
-            TextButton(
-              child: Text('No'),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              style: TextButton.styleFrom(
-                primary: Theme.of(context).primaryColor,
-                textStyle: TextStyle(
-                  fontWeight: FontWeight.bold,
+  bool? value = true;
+
+  if (Provider.of<FoodieCart>(context, listen: false).cartItems.isNotEmpty) {
+    value = await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            content: Text(
+                "Your cart will be cleared, Are you sure you want to exit?"),
+            actions: <Widget>[
+              TextButton(
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                style: TextButton.styleFrom(
+                  primary: Theme.of(context).primaryColor,
+                  textStyle: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-            TextButton(
-              child: Text('Yes, exit'),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              style: TextButton.styleFrom(
-                primary: Theme.of(context).primaryColor,
-                textStyle: TextStyle(
-                  fontWeight: FontWeight.bold,
+              TextButton(
+                child: Text('Yes, exit'),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                style: TextButton.styleFrom(
+                  primary: Theme.of(context).primaryColor,
+                  textStyle: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-          ],
-        );
-      });
+            ],
+          );
+        });
+  }
 
   if (value == true) {
     final foods = Provider.of<Foods>(context, listen: false);

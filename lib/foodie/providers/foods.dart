@@ -32,6 +32,10 @@ class Foods with ChangeNotifier {
     return [..._selections];
   }
 
+  void setempty() {
+    _foods = [];
+  }
+
   List<Food> getAllFoods(String resId) {
     List<Food> foods = [
       ..._foods.where((food) => food.restaurantId == resId && food.veg == _veg)
@@ -98,53 +102,50 @@ class Foods with ChangeNotifier {
   Future<void> fetchFoods(resId) async {
     if (_foods.where((e) => e.restaurantId == resId).isEmpty) {
       try {
-        print("fetching");
-        final url = Uri.parse(
-            "https://alofoodie-1.herokuapp.com/allFoodsByRes?resId=$resId");
+        final url =
+            Uri.parse("https://alofoodie.herokuapp.com/foods?id=$resId");
         final response = await http.get(url);
 
-        List decoded = json.decode(response.body)["foods"];
+        List decoded = json.decode(response.body)["data"];
 
         List categoriesList = [];
 
-        _foods = [
-          ..._foods,
-          ...decoded.map((food) {
-            categoriesList.add(food["category"]);
+        if (_foods.where((e) => e.restaurantId == resId).isEmpty) {
+          _foods = [
+            ..._foods,
+            ...decoded.map((food) {
+              categoriesList.add(food["category"]);
 
-            return Food(
-              id: food["_id"],
-              name: food["name"],
-              image: food["image"],
-              description: food["description"],
-              category: food["category"],
-              veg: food["veg"],
-              addons: food["addons"].length == 0 ? null : food["addons"],
-              toppings: food["toppings"].length == 0 ? null : food["toppings"],
-              sizes: food["sizes"].length == 0 ? null : food["sizes"],
-              buns: food["buns"].length == 0 ? null : food["buns"],
-              fixedPrice: food["fixedPrice"],
-              offerPrice: food["offerPrice"],
-              packagingCharge:
-                  food["packagingCharge"] == null ? 0 : food["packagingCharge"],
-              availableFrom: food["availabilityTiming"]["from"],
-              availableTo: food["availabilityTiming"]["to"],
-              isActive: food["isActive"],
-              bestSeller:
-                  food["bestSeller"] == null ? false : food["bestSeller"],
-              rating: 4.4,
-              // food["rating"] + 0.1,
-              restaurantId: food["restaurantId"],
-            );
-          })
-        ];
-
-        _categories = [
-          ..._categories,
-          ...categoriesList
-              .toSet()
-              .map((category) => {"category": category, "resId": resId})
-        ];
+              return Food(
+                id: food["_id"],
+                name: food["name"],
+                image: food["image"],
+                description: food["description"],
+                category: food["category"],
+                veg: food["veg"],
+                addons: food["addons"],
+                toppings: food["toppings"],
+                sizes: food["sizes"],
+                buns: food["buns"],
+                fixedPrice: food["fixedPrice"],
+                offerPrice: food["offerPrice"],
+                packingCharge: food["packingCharge"],
+                availableFrom: food["timing"]["from"],
+                availableTo: food["timing"]["to"],
+                active: food["active"],
+                bestSeller: food["bestSeller"],
+                rating: 4.4,
+                restaurantId: food["restaurantId"],
+              );
+            })
+          ];
+          _categories = [
+            ..._categories,
+            ...categoriesList
+                .toSet()
+                .map((category) => {"category": category, "resId": resId})
+          ];
+        }
       } catch (e) {
         print("food " + e.toString());
       }

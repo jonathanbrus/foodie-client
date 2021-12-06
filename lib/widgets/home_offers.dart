@@ -23,18 +23,22 @@ class _HomeOfferButtonsState extends State<HomeOfferButtons> {
       "title": "Offer Zone 2",
       "category": "offer2",
     },
+    {
+      "title": "Offer Zone 3",
+      "category": "offer3",
+    },
   ];
 
   fetchSlider() async {
-    var url = Uri.parse(
-        "https://alofoodie-1.herokuapp.com/fetchImages?imageFor=homeoffer");
+    var url =
+        Uri.parse("https://alofoodie.herokuapp.com/images?imageFor=homeoffer");
     try {
       final response = await http.get(url);
 
       final decoded = json.decode(response.body);
 
       setState(() {
-        _images = [decoded["images"][0], decoded["images"][1]];
+        _images = [decoded["data"][0], decoded["data"][1], decoded["data"][2]];
       });
     } catch (e) {
       print(e);
@@ -86,7 +90,7 @@ class _HomeOfferButtonsState extends State<HomeOfferButtons> {
                     width: double.infinity,
                     height: double.infinity,
                     imageUrl: image,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fill,
                   ),
                 ),
               ),

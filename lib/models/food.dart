@@ -5,16 +5,16 @@ class Food {
   final String description;
   final String category;
   final bool veg;
-  final List? addons;
-  final List? toppings;
-  final List? sizes;
-  final List? buns;
+  final List addons;
+  final List toppings;
+  final List sizes;
+  final List buns;
   final int fixedPrice;
   final int offerPrice;
-  final int packagingCharge;
+  final int packingCharge;
   final int availableFrom;
   final int availableTo;
-  final bool isActive;
+  final bool active;
   final double rating;
   final bool bestSeller;
   final String restaurantId;
@@ -26,16 +26,16 @@ class Food {
     required this.description,
     required this.category,
     required this.veg,
-    this.addons,
-    this.toppings,
-    this.sizes,
-    this.buns,
+    required this.addons,
+    required this.toppings,
+    required this.sizes,
+    required this.buns,
     required this.fixedPrice,
     required this.offerPrice,
-    required this.packagingCharge,
+    required this.packingCharge,
     required this.availableFrom,
     required this.availableTo,
-    required this.isActive,
+    required this.active,
     required this.rating,
     required this.bestSeller,
     required this.restaurantId,

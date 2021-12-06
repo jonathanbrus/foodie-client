@@ -58,7 +58,7 @@ class PriceDetail extends StatelessWidget {
                 ),
                 RowItem(
                   title: "Tax",
-                  result: "3%",
+                  result: "5%",
                 ),
                 if (food)
                   RowItem(
@@ -70,7 +70,9 @@ class PriceDetail extends StatelessWidget {
                   title: "Delivery Charge",
                   result: itemsAmount > freeDeliveryMargin
                       ? "Free"
-                      : "Rs.$deliveryCharge",
+                      : deliveryCharge == 0
+                          ? "Free"
+                          : "Rs.$deliveryCharge",
                 ),
               ],
             ),

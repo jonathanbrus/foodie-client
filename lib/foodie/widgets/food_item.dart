@@ -26,6 +26,16 @@ class FoodItem extends StatelessWidget {
 
     final width = MediaQuery.of(context).size.width;
 
+    final filter = availability
+        ? ColorFilter.mode(
+            Colors.transparent,
+            BlendMode.multiply,
+          )
+        : ColorFilter.mode(
+            Colors.grey,
+            BlendMode.saturation,
+          );
+
     return Card(
       margin: EdgeInsets.only(bottom: 8, left: 8, right: 8),
       elevation: 4,
@@ -42,15 +52,7 @@ class FoodItem extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: ColorFiltered(
-                      colorFilter: availability
-                          ? ColorFilter.mode(
-                              Colors.transparent,
-                              BlendMode.multiply,
-                            )
-                          : ColorFilter.mode(
-                              Colors.grey,
-                              BlendMode.saturation,
-                            ),
+                      colorFilter: filter,
                       child: Stack(
                         children: [
                           CachedNetworkImage(
@@ -117,10 +119,10 @@ class FoodItem extends StatelessWidget {
                     ),
                     Consumer<FoodieCart>(builder: (ctx, foodieCart, ch) {
                       return Expanded(
-                        child: (food.addons == null &&
-                                    food.toppings == null &&
-                                    food.sizes == null &&
-                                    food.buns == null ||
+                        child: (food.addons.isEmpty &&
+                                    food.toppings.isEmpty &&
+                                    food.sizes.isEmpty &&
+                                    food.buns.isEmpty ||
                                 !foodieCart.inCart(food.id))
                             ? Container(
                                 alignment: Alignment.centerLeft,
@@ -133,7 +135,7 @@ class FoodItem extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  if (food.addons != null)
+                                  if (food.addons.isNotEmpty)
                                     DropDown(
                                       id: food.id,
                                       title: "Addons",
@@ -148,7 +150,7 @@ class FoodItem extends StatelessWidget {
                                         id,
                                       ),
                                     ),
-                                  if (food.toppings != null)
+                                  if (food.toppings.isNotEmpty)
                                     DropDown(
                                       id: food.id,
                                       title: "Toppings",
@@ -163,7 +165,7 @@ class FoodItem extends StatelessWidget {
                                         id,
                                       ),
                                     ),
-                                  if (food.sizes != null)
+                                  if (food.sizes.isNotEmpty)
                                     DropDown(
                                       id: food.id,
                                       title: "Sizes",
@@ -178,7 +180,7 @@ class FoodItem extends StatelessWidget {
                                         id,
                                       ),
                                     ),
-                                  if (food.buns != null)
+                                  if (food.buns.isNotEmpty)
                                     DropDown(
                                       id: food.id,
                                       title: "Buns",
@@ -248,7 +250,7 @@ class FoodItem extends StatelessWidget {
                                     food.image,
                                     food.fixedPrice,
                                     food.offerPrice,
-                                    food.packagingCharge,
+                                    food.packingCharge,
                                   ),
                                 ),
                               ],

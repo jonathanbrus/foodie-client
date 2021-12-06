@@ -152,7 +152,7 @@ class RestaurantItem extends StatelessWidget {
                               size: 22,
                             ),
                             Text(
-                              "$rating",
+                              rating.toStringAsFixed(1),
                               style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                                 fontSize: 14,
